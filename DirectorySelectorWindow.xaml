@@ -1,0 +1,251 @@
+﻿<Window x:Class="UnrealPorting.DirectorySelectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Game Profiles"
+        Width="600"
+        Height="420"
+        Background="#222">
+
+    <Grid Margin="12">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- =======================
+             Existing Profiles
+        ============================ -->
+        <GroupBox Header="Select Existing Profile"
+                  Foreground="White"
+                  Margin="0 0 0 10">
+            <StackPanel Orientation="Horizontal" Margin="10">
+                <TextBlock Text="Profile:"
+                           VerticalAlignment="Center"
+                           Foreground="White"
+                           Margin="0 0 10 0"/>
+
+                <ComboBox x:Name="ExistingProfilesCombo"
+                          Width="250"
+                          Margin="0 0 10 0"/>
+            </StackPanel>
+        </GroupBox>
+
+        <!-- =======================
+             New Profile Creation
+        ============================ -->
+        <GroupBox Grid.Row="1"
+                  Header="Add New Game Profile"
+                  Foreground="White">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Name -->
+                <TextBlock Text="Profile Name:"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
+
+                <TextBox x:Name="NewNameBox"
+                         Grid.Row="0"
+                         Grid.Column="1"
+                         Margin="5"
+                         Background="#333"
+                         Foreground="White"/>
+
+                <!-- Directory -->
+                <TextBlock Text="Game Directory:"
+                           Grid.Row="1"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
+
+                <TextBox x:Name="NewDirBox"
+                         Grid.Row="1"
+                         Grid.Column="1"
+                         Margin="5"
+                         Background="#333"
+                         Foreground="White"/>
+
+                <Button Content="Browse..."
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Margin="5"
+                        Click="BrowseDirectory_Click"/>
+
+                <!-- Engine Version -->
+                <TextBlock Text="Engine Version:"
+                           Grid.Row="2"
+                           Grid.Column="0"
+                           VerticalAlignment="Center"
+                           Foreground="White"/>
+
+                <ComboBox x:Name="NewEngineCombo"
+                          Grid.Row="2"
+                          Grid.Column="1"
+                          Margin="5"
+                          Background="#333"
+                          Foreground="White">
+                    <ComboBoxItem Content="UE4.16"/>
+                    <ComboBoxItem Content="UE4.19"/>
+                    <ComboBoxItem Content="UE4.20"/>
+                    <ComboBoxItem Content="UE4.21"/>
+                    <ComboBoxItem Content="UE4.22"/>
+                    <ComboBoxItem Content="UE4.23"/>
+                    <ComboBoxItem Content="UE4.24"/>
+                    <ComboBoxItem Content="UE4.25"/>
+                    <ComboBoxItem Content="UE4.26"/>
+                    <ComboBoxItem Content="UE4.27"/>
+                    <ComboBoxItem Content="UE5.0"/>
+                    <ComboBoxItem Content="UE5.1"/>
+                    <ComboBoxItem Content="UE5.2"/>
+                    <ComboBoxItem Content="UE5.3"/>
+                    <ComboBoxItem Content="UE5.4"/>
+                    <ComboBoxItem Content="UE5.5"/>
+                    <ComboBoxItem Content="UE5.6"/>
+                </ComboBox>
+
+                <!-- Add Button -->
+                <Button Content="Add Game Profile"
+                        Grid.Row="3"
+                        Grid.Column="1"
+                        HorizontalAlignment="Left"
+                        Margin="5"
+                        Padding="8 4"
+                        Click="AddGame_Click"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- =======================
+             OK / Cancel
+        ============================ -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0 10 0 0">
+
+            <Button Content="OK"
+                    Width="100"
+                    Margin="5"
+                    Padding="6"
+                    Click="OK_Click"/>
+
+            <Button Content="Cancel"
+                    Width="100"
+                    Margin="5"
+                    Padding="6"
+                    Click="Cancel_Click"/>
+        </StackPanel>
+
+    </Grid>
+
+    <Window.Resources>
+
+        <!-- DARK COMBOBOX -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#2A2A2A"/>
+            <Setter Property="BorderBrush" Value="#555"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="4"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="25"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Current Selected Item -->
+                            <ContentPresenter x:Name="ContentSite"
+                                      Margin="6,3,0,3"
+                                      IsHitTestVisible="False"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Left"
+                                      Content="{TemplateBinding SelectionBoxItem}"
+                                      ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+
+                            <!-- Drop Button -->
+                            <ToggleButton x:Name="ToggleButton"
+                                  Grid.Column="1"
+                                  Focusable="False"
+                                  Background="#2A2A2A"
+                                  BorderBrush="#555"
+                                  BorderThickness="1"
+                                  IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                  ClickMode="Press">
+                                <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                              Fill="White"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center"/>
+                            </ToggleButton>
+
+                            <!-- Popup -->
+                            <Popup x:Name="Popup"
+                           Placement="Bottom"
+                           AllowsTransparency="True"
+                           IsOpen="{TemplateBinding IsDropDownOpen}"
+                           Focusable="False"
+                           PopupAnimation="Slide">
+                                <Border Background="#1E1E1E"
+                                BorderBrush="#555"
+                                BorderThickness="1"
+                                Padding="2">
+                                    <ScrollViewer Margin="2"
+                                          SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <!-- TRIGGERS -->
+                        <ControlTemplate.Triggers>
+
+                            <!-- Disable style -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ToggleButton" Property="Opacity" Value="0.4"/>
+                                <Setter Property="Foreground" Value="#777"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <!-- DARK COMBOBOX ITEMS -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="Padding" Value="4"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#333"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#444"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+
+    </Window.Resources>
+</Window>
