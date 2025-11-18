@@ -18,6 +18,7 @@
                  Height="28"
                  Background="#222"
                  Foreground="White"
+                 BorderBrush="RoyalBlue"
                  Padding="6"
                  TextChanged="SearchBox_TextChanged"/>
 

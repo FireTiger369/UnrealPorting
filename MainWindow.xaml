@@ -81,11 +81,12 @@
 
                         <!-- Top toolbar -->
                         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Background="#2D2D30" HorizontalAlignment="Center">
-                            <Button x:Name="BtnLoadArchives" 
-                                Content="Load AES and Mount Archives"
+                            <Button x:Name="BtnLoadArchives"
+                                Content="Load AES and Mount Archives" FontWeight="Bold"
                                 Width="220" Height="30"
                                 Margin="0,0,0,0"
-                                Click="BtnLoadArchives_Click" Background="#FFFBFBFB"/>
+                                Click="BtnLoadArchives_Click" Foreground="White"
+                                BorderBrush="RoyalBlue" Background="#FF14254E"/>
                         </StackPanel>
 
                         <!-- Archives List -->
@@ -93,8 +94,7 @@
                                 Style="{StaticResource DarkTreeView}"
                                 ItemContainerStyle="{StaticResource DarkTreeViewItem}"
                               SelectedItemChanged="ArchivesTreeView_SelectedItemChanged"
-                              Foreground="White"
-                              Background="#2E2E2E"/>
+                              Foreground="White" Background="#FF2E2E2E"/>
                     </DockPanel>
                 </TabItem>
 

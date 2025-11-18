@@ -94,7 +94,8 @@
                         Width="100"
                         Click="SelectMappings_Click"
                         Foreground="White"
-                        Background="#2E2E2E"/>
+                        Background="#2E2E2E"
+                        BorderBrush="RoyalBlue"/>
             </StackPanel>
 
         </StackPanel>
