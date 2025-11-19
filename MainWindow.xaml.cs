@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using UnrealPorting.Helpers;
 using UnrealPorting.Properties;
@@ -215,112 +216,6 @@ namespace UnrealPorting
         #endregion
 
         #region Game Folder & Package Loading
-
-        private void ApplyAESKeysFromUI(Dictionary<string, string> aesDict)
-        {
-            Console.WriteLine("[AES] Received keys from AES window.");
-
-            var profile = App.SelectedProfile;
-            if (profile == null)
-            {
-                MessageBox.Show("No active profile.", "Error");
-                return;
-            }
-
-            // Convert AES dict → GUID + filename maps
-            var guidKeys = new Dictionary<Guid, string>();
-            var filenameKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            foreach (var kv in aesDict)
-            {
-                if (Guid.TryParse(kv.Key, out var g))
-                    guidKeys[g] = kv.Value;
-                else
-                    filenameKeys[kv.Key] = kv.Value;
-            }
-
-            // Resolve Paks dir based on PROFILE directory
-            string? pakDir = ResolvePaksDirectory(profile.Directory);
-            if (pakDir == null)
-            {
-                MessageBox.Show("Could not find a Paks folder inside the selected profile directory.", "Error");
-                return;
-            }
-
-            // Initialize Oodle using PROFILE ROOT
-            EnsureOodleInitialized(profile.Directory);
-
-            // Build PakReader
-            _pakReader?.Dispose();
-            _pakReader = new AppPakReader(
-                pakDir,
-                guidKeys,
-                filenameKeys,
-                profile.MappingPath
-            );
-
-            Console.WriteLine("[AES] Updated PakReader with new keys.");
-        }
-
-
-        private void LoadGamePackagesTree(string targetFolder)
-        {
-            if (_pakReader == null)
-            {
-                Console.WriteLine("[WARN] No PAK reader loaded.");
-                return;
-            }
-
-            targetFolder = NormalizeFolderPath(targetFolder);
-            GamePackagesTreeView.Items.Clear();
-
-            int totalFiles = 0;
-
-            Console.WriteLine($"[DEBUG] Searching assets in: '{targetFolder}'");
-
-            try
-            {
-                foreach (var file in _pakReader.EnumerateFilePaths())
-                {
-                    string normalized = NormalizeFolderPath(file);
-
-                    if (!normalized.StartsWith(targetFolder + "/", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    int nextSlash = normalized.IndexOf('/', targetFolder.Length + 1);
-
-                    if (nextSlash != -1)
-                        continue;
-
-                    if (normalized.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) ||
-                        normalized.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
-                    {
-                        GamePackagesTreeView.Items.Add(new TreeViewItem
-                        {
-                            Header = Path.GetFileName(normalized),
-                            Tag = normalized
-                        });
-
-                        totalFiles++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[WARN] Failed to enumerate reader: {ex.Message}");
-            }
-
-            if (totalFiles == 0)
-            {
-                GamePackagesTreeView.Items.Add(
-                    new TreeViewItem { Header = "(No assets found)" }
-                );
-            }
-
-            Console.WriteLine(
-                $"Loaded {totalFiles} package files from '{targetFolder}' into GamePackagesTreeView."
-            );
-        }
 
         private void LoadAssetsForSelectedFolder(string folderPath)
         {
@@ -598,26 +493,6 @@ namespace UnrealPorting
 
             LoadAssetsForSelectedFolder(folderPath);
         }
-
-        private void OpenMappingsWindow_Click(object sender, RoutedEventArgs e)
-        {
-            var profile = App.SelectedProfile;
-            if (profile == null)
-            {
-                MessageBox.Show("No profile selected.");
-                return;
-            }
-
-            var window = new MappingsWindow { Owner = this };
-
-            if (window.ShowDialog() == true)
-            {
-                profile.MappingPath = window.SelectedMapping;
-                GameProfileStore.Save();
-
-                MessageBox.Show($"Mapping saved:\n{profile.MappingPath}");
-            }
-        }
         private void OpenSettingsWindow_Click(object sender, RoutedEventArgs e)
         {
             var win = new SettingsWindow();
@@ -752,11 +627,148 @@ namespace UnrealPorting
             MessageBox.Show("Archives mounted and loaded.");
         }
 
-
-
         #endregion
 
         #region Helpers
+        private Task FadeOut(UIElement element)
+        {
+            if (element == null) return Task.CompletedTask;
+
+            var storyboard = (Storyboard)FindResource("PreviewFadeOut");
+            Storyboard.SetTarget(storyboard, element);
+
+            var tcs = new TaskCompletionSource<object>();
+            storyboard.Completed += (_, __) => tcs.TrySetResult(null);
+
+            storyboard.Begin();
+            return tcs.Task;
+        }
+
+        private Task FadeIn(UIElement element)
+        {
+            if (element == null) return Task.CompletedTask;
+
+            var storyboard = (Storyboard)FindResource("PreviewFadeIn");
+            Storyboard.SetTarget(storyboard, element);
+
+            storyboard.Begin();
+            return Task.CompletedTask;
+        }
+
+        private void SelectFileInTree(string assetPath)
+        {
+            if (string.IsNullOrWhiteSpace(assetPath))
+                return;
+
+            // Switch to Game Packages tab
+            MainTabControl.SelectedIndex = 2;
+
+            // Load assets for the folder
+            string folder = System.IO.Path.GetDirectoryName(assetPath)
+                            ?.Replace("\\", "/") ?? "";
+
+            LoadAssetsForSelectedFolder(folder);
+
+            // Select the file inside the GamePackagesTreeView
+            foreach (TreeViewItem item in GamePackagesTreeView.Items)
+            {
+                if (item.Tag as string == assetPath)
+                {
+                    item.IsSelected = true;
+                    item.BringIntoView();
+
+                    // Preview the asset immediately
+                    PreviewManager.ShowFilePreviewAsync(
+                        item,
+                        this,
+                        filePath => FindReaderForPath(filePath)
+                    );
+
+                    return;
+                }
+            }
+        }
+
+        private bool SelectInChildren(TreeViewItem node, string assetPath)
+        {
+            if (node == null)
+                return false;
+
+            string nodePath = node.Tag as string ?? "";
+
+            // If this node is EXACTLY the asset → select it
+            if (nodePath.Equals(assetPath, StringComparison.OrdinalIgnoreCase))
+            {
+                node.IsSelected = true;
+                node.BringIntoView();
+                return true;
+            }
+
+            // Only expand if the assetPath is inside this folder
+            // (prevents expanding the entire tree!)
+            if (!assetPath.StartsWith(nodePath + "/", StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            // Now we know this folder is part of the correct path
+            node.IsExpanded = true;
+            node.UpdateLayout();
+
+            // Recursively search children
+            foreach (TreeViewItem child in node.Items)
+            {
+                if (SelectInChildren(child, assetPath))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public void NavigateToAsset(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            // Remove leading "/"
+            string normalized = path.Trim().TrimStart('/');
+
+            // Remove trailing .Something after asset name
+            int dot = normalized.LastIndexOf('.');
+            if (dot > 0)
+                normalized = normalized.Substring(0, dot);
+
+            // Convert /Game/... → FortniteGame/Content/...
+            if (normalized.StartsWith("Game/", StringComparison.OrdinalIgnoreCase))
+            {
+                normalized = "FortniteGame/Content/" + normalized.Substring(5);
+            }
+
+            // Try matching file
+            string uasset = normalized + ".uasset";
+            string umap = normalized + ".umap";
+
+            string match = _globalFilePaths.FirstOrDefault(f =>
+                f.Equals(uasset, StringComparison.OrdinalIgnoreCase) ||
+                f.Equals(umap, StringComparison.OrdinalIgnoreCase)
+            );
+
+            if (match != null)
+            {
+                SelectFileInTree(match);
+
+                // OPTIONAL: auto-switch to packages tab
+                MainTabControl.SelectedIndex = 2;
+
+                // OPTIONAL: auto-load the folder’s assets
+                string folderPath = System.IO.Path.GetDirectoryName(match).Replace("\\", "/");
+                LoadAssetsForSelectedFolder(folderPath);
+
+                return;
+            }
+
+            Console.WriteLine($"[WARN] No file matched: {normalized}");
+        }
+
+
 
         private string? ResolvePaksDirectory(string dir)
         {
@@ -843,39 +855,79 @@ namespace UnrealPorting
                 Console.WriteLine("[Oodle] ERROR initializing: " + ex);
             }
         }
-        public void ShowSinglePaneText(string text)
+        public async void ShowSinglePaneText(string text)
         {
+            // fade out old panel
+            await FadeOut(SinglePaneGrid);
+            await FadeOut(DualPaneGrid);
+
             SinglePaneGrid.Visibility = Visibility.Visible;
             DualPaneGrid.Visibility = Visibility.Collapsed;
 
-            PreviewText_Single.Text = text;
+            // Split into lines off UI thread
+            _ = Task.Run(() =>
+            {
+                var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+                Dispatcher.Invoke(() =>
+                {
+                    JsonList.ItemsSource = lines;
+                    JsonList.ScrollIntoView(lines.FirstOrDefault());
+                }, System.Windows.Threading.DispatcherPriority.Background);
+            });
+
+            // fade in refreshed content
+            await FadeIn(SinglePaneGrid);
+        }
+        private void JsonList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (JsonList.SelectedItem is not string line)
+                return;
+
+            int idx = line.IndexOf("/Game/", StringComparison.OrdinalIgnoreCase);
+            if (idx < 0)
+                return;
+
+            // Extract until whitespace, quote, comma, or brace
+            int end = idx;
+            while (end < line.Length &&
+                   !char.IsWhiteSpace(line[end]) &&
+                   line[end] != '"' &&
+                   line[end] != ',' &&
+                   line[end] != '}')
+            {
+                end++;
+            }
+
+            string path = line.Substring(idx, end - idx);
+
+            // This was your missing problem!
+            NavigateToAsset(path);
         }
 
-        public void ShowDualPane(string textLeft, byte[] pngBytes)
+        public async void ShowDualPane(string textLeft, byte[] pngBytes)
         {
-            Dispatcher.Invoke(() =>
-            {
-                // Activate dual-pane layout
-                SinglePaneGrid.Visibility = Visibility.Collapsed;
-                DualPaneGrid.Visibility = Visibility.Visible;
+            await FadeOut(SinglePaneGrid);
+            await FadeOut(DualPaneGrid);
 
-                // Set JSON text (left pane)
-                PreviewText_Dual.Text = textLeft;
+            SinglePaneGrid.Visibility = Visibility.Collapsed;
+            DualPaneGrid.Visibility = Visibility.Visible;
 
-                // Load bitmap from PNG
-                BitmapImage bmp = new BitmapImage();
-                using var ms = new MemoryStream(pngBytes);
-                bmp.BeginInit();
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.StreamSource = ms;
-                bmp.EndInit();
-                bmp.Freeze();
+            PreviewText_Dual.Text = textLeft;
 
-                // Apply bitmap to right pane image control
-                PreviewImage.Source = bmp;
+            // Load image
+            BitmapImage bmp = new BitmapImage();
+            using var ms = new MemoryStream(pngBytes);
+            bmp.BeginInit();
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.StreamSource = ms;
+            bmp.EndInit();
+            bmp.Freeze();
 
-                PreviewImage.Visibility = Visibility.Visible;
-            });
+            PreviewImage.Source = bmp;
+            PreviewImage.Visibility = Visibility.Visible;
+
+            await FadeIn(DualPaneGrid);
         }
 
         private async Task<bool> ExpandFolderPath(string fullPath)

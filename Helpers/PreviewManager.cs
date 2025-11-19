@@ -305,9 +305,9 @@ namespace UnrealPorting.Helpers
             // Hide image preview if it was previously shown
             mainWindow.PreviewImage.Visibility = Visibility.Collapsed;
 
-            // Show full-width text preview
-            mainWindow.PreviewText_Single.Visibility = Visibility.Visible;
-            mainWindow.PreviewText_Single.Text = text;
+            // Fill the virtualized JSON viewer
+            var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            mainWindow.JsonList.ItemsSource = lines;
         }
 
         public static void DeserializeAllExports(this IPackage package)
