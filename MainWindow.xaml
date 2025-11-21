@@ -9,27 +9,22 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
+        <!-- Glow effect for panels -->
         <DropShadowEffect x:Key="PanelGlow"
-                  Color="#5AA6FF"
-                  BlurRadius="30"
-                  ShadowDepth="0"
-                  Opacity="0.35"/>
+                          Color="#5AA6FF"
+                          BlurRadius="30"
+                          ShadowDepth="0"
+                          Opacity="0.35"/>
 
-        <!-- Icons (unchanged) -->
+        <!-- Icons -->
         <BitmapImage x:Key="FolderClosedIcon" UriSource="Icons/folder_closed.png"/>
         <BitmapImage x:Key="FolderOpenIcon"  UriSource="Icons/folder_open.png"/>
         <BitmapImage x:Key="AssetIcon" UriSource="Icons/asset_icon.png"/>
 
-        <!-- Spinner color (unchanged) -->
+        <!-- Spinner color -->
         <SolidColorBrush x:Key="SpinnerBrush" Color="#5AA6FF"/>
 
-        <!-- Spinner animation (unchanged) -->
-        <Storyboard x:Key="SpinnerRotation" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
-                             From="0" To="360" Duration="0:0:1"/>
-        </Storyboard>
-
-        <!-- FortForge-like colors -->
+        <!-- FortForge-ish colors -->
         <SolidColorBrush x:Key="HeaderBgBrush" Color="#111218"/>
         <SolidColorBrush x:Key="SidebarBgBrush" Color="#0E0E10"/>
         <SolidColorBrush x:Key="SidebarButtonBg" Color="#15161C"/>
@@ -38,9 +33,9 @@
         <SolidColorBrush x:Key="PanelBgBrush" Color="#18181B"/>
         <SolidColorBrush x:Key="PanelBorderBrush" Color="#2A2A2D"/>
 
-        <!-- Glowing gradient for the sidebar strip -->
+        <!-- Sidebar glow strip -->
         <LinearGradientBrush x:Key="SidebarGlowBrush"
-                     StartPoint="0,0" EndPoint="0,1">
+                             StartPoint="0,0" EndPoint="0,1">
             <GradientStop Color="#66A8FFFF" Offset="0.0"/>
             <GradientStop Color="#5AA6FF" Offset="0.25"/>
             <GradientStop Color="#A47CFF" Offset="0.55"/>
@@ -48,18 +43,18 @@
             <GradientStop Color="#66A8FFFF" Offset="1.0"/>
         </LinearGradientBrush>
 
-        <!-- Dark Tree background (retained but modernized) -->
-        <Style TargetType="TreeView" x:Key="DarkTreeView">
+        <!-- Tree styles -->
+        <Style x:Key="DarkTreeView" TargetType="TreeView">
             <Setter Property="Background" Value="#18181B"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <Style TargetType="TreeViewItem" x:Key="DarkTreeViewItem">
+        <Style x:Key="DarkTreeViewItem" TargetType="TreeViewItem">
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!-- Sidebar text-only button style -->
+        <!-- Sidebar nav button -->
         <Style x:Key="SidebarNavButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource SidebarButtonBg}"/>
             <Setter Property="Foreground" Value="{StaticResource SidebarButtonText}"/>
@@ -90,29 +85,182 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Fade Out -->
+        <!-- Rounded modern tab header (kept for future use) -->
+        <Style x:Key="roundedmoderntab" TargetType="{x:Type TabItem}">
+            <Setter Property="Foreground" Value="#E5E7EB"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="22,10"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid Background="Transparent">
+                            <StackPanel Orientation="Vertical"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <ContentPresenter x:Name="TabText"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"/>
+
+                                <Border x:Name="Underline"
+                                        Height="3"
+                                        Width="26"
+                                        Background="#5AA6FF"
+                                        CornerRadius="2"
+                                        Margin="0,6,0,0"
+                                        Opacity="0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Underline" Property="Opacity" Value="1"/>
+                                <Setter Property="Foreground" Value="#FFFFFF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TabControl base style -->
+        <Style TargetType="TabControl">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style TargetType="TabPanel">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <!-- Dark ContextMenu -->
+        <Style TargetType="ContextMenu" x:Key="DarkContextMenu">
+            <Setter Property="Background" Value="#111218"/>
+            <Setter Property="BorderBrush" Value="#26262C"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- Proper Dark MenuItem Template (with required layout!) -->
+        <Style TargetType="MenuItem" x:Key="DarkMenuItem">
+            <Setter Property="Foreground" Value="#E5E7EB"/>
+            <Setter Property="Background" Value="#111218"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+
+                        <!-- REQUIRED for WPF to render correctly -->
+                        <Grid>
+                            <Border x:Name="Bg"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#26262C"
+                            BorderThickness="0"/>
+
+                            <Grid Margin="6,2">
+                                <!-- Left icon area -->
+                                <ContentPresenter x:Name="Icon"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Center"
+                                          ContentSource="Icon"/>
+
+                                <!-- Menu text -->
+                                <ContentPresenter x:Name="Text"
+                                          Grid.Column="1"
+                                          Margin="22,0,0,0"
+                                          VerticalAlignment="Center"
+                                          ContentSource="Header"/>
+                            </Grid>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#1F2A3F"/>
+                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Easing -->
+        <SineEase x:Key="SineEaseOut" EasingMode="EaseOut"/>
+        <SineEase x:Key="SineEaseIn" EasingMode="EaseIn"/>
+
+        <!-- Fade animations for preview -->
         <Storyboard x:Key="PreviewFadeOut">
-            <DoubleAnimation
-                Storyboard.TargetProperty="Opacity"
-                To="0"
-                Duration="0:0:0.12"
-                FillBehavior="Stop"/>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             To="0"
+                             Duration="0:0:0.12"
+                             FillBehavior="Stop"/>
         </Storyboard>
 
         <Storyboard x:Key="PreviewFadeIn">
-            <DoubleAnimation
-                Storyboard.TargetProperty="Opacity"
-                From="0"
-                To="1"
-                Duration="0:0:0.15"/>
+            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                             From="0"
+                             To="1"
+                             Duration="0:0:0.15"/>
         </Storyboard>
 
+        <!-- Spinner animation -->
+        <Storyboard x:Key="SpinnerPremium" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SpinnerRotate"
+                             Storyboard.TargetProperty="Angle"
+                             From="0" To="360"
+                             Duration="0:0:1.4"
+                             RepeatBehavior="Forever"/>
+            <DoubleAnimation Storyboard.TargetName="SweepRotate"
+                             Storyboard.TargetProperty="Angle"
+                             From="0" To="360"
+                             Duration="0:0:0.9"
+                             RepeatBehavior="Forever"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SlideLeftIn">
+            <DoubleAnimation Storyboard.TargetName="SlideTransform"
+                     Storyboard.TargetProperty="X"
+                     From="200" To="0"
+                     Duration="0:0:0.25"
+                     EasingFunction="{StaticResource SineEaseOut}"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SlideLeftOut">
+            <DoubleAnimation Storyboard.TargetName="SlideTransform"
+                     Storyboard.TargetProperty="X"
+                     From="0" To="-200"
+                     Duration="0:0:0.25"
+                     EasingFunction="{StaticResource SineEaseIn}"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SlideRightIn">
+            <DoubleAnimation Storyboard.TargetName="SlideTransform"
+                     Storyboard.TargetProperty="X"
+                     From="-200" To="0"
+                     Duration="0:0:0.25"
+                     EasingFunction="{StaticResource SineEaseOut}"/>
+        </Storyboard>
+
+        <Storyboard x:Key="SlideRightOut">
+            <DoubleAnimation Storyboard.TargetName="SlideTransform"
+                     Storyboard.TargetProperty="X"
+                     From="0" To="200"
+                     Duration="0:0:0.25"
+                     EasingFunction="{StaticResource SineEaseIn}"/>
+        </Storyboard>
 
     </Window.Resources>
 
     <DockPanel>
 
-        <!-- TOP HEADER BAR (FortForge-ish, but using your existing Menu) -->
+        <!-- HEADER BAR -->
         <Border DockPanel.Dock="Top"
                 Background="{StaticResource HeaderBgBrush}"
                 Height="40">
@@ -122,7 +270,6 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: App title + Menu -->
                 <StackPanel Orientation="Horizontal"
                             VerticalAlignment="Center"
                             Margin="12,0,0,0">
@@ -132,22 +279,17 @@
                                FontWeight="Bold"
                                Margin="0,0,18,0"/>
                 </StackPanel>
-
-                <!-- Right: you can add status text later if you want -->
             </Grid>
         </Border>
-
 
         <!-- MAIN AREA -->
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
-                <!-- Sidebar -->
                 <ColumnDefinition Width="200"/>
-                <!-- Main content -->
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- SIDEBAR WITH GLOW -->
+            <!-- SIDEBAR -->
             <Border Grid.Column="0" Margin="0,0,14,0">
                 <Border.Effect>
                     <DropShadowEffect Color="#5AA6FF"
@@ -155,245 +297,409 @@
                                       ShadowDepth="0"
                                       Opacity="0.35"/>
                 </Border.Effect>
-                <Border Grid.Column="0"
-                    Background="#14141A"
-                    CornerRadius="12"
-                    BorderThickness="1"
-                    BorderBrush="#26262C"
-                    Opacity="0.92">
+                <Border Background="#14141A"
+                        CornerRadius="12"
+                        BorderThickness="1"
+                        BorderBrush="#26262C"
+                        Opacity="0.92">
                     <Grid>
-                    <Grid.ColumnDefinitions>
-                        <!-- Glow strip -->
-                        <ColumnDefinition Width="8"/>
-                        <!-- Nav items -->
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!-- Glowing vertical bar -->
-                    <Border Grid.Column="0"
-                            Background="{StaticResource SidebarGlowBrush}"
-                            CornerRadius="6,0,0,6" />
+                        <!-- glow strip -->
+                        <Border Grid.Column="0"
+                                Background="{StaticResource SidebarGlowBrush}"
+                                CornerRadius="6,0,0,6" />
 
-                    <!-- Sidebar Content -->
-                    <StackPanel Grid.Column="1"
-                                Margin="12,10,12,10">
-                        <TextBlock Text="Navigation"
-                                   Foreground="#9CA3AF"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   Margin="2,0,0,4"/>
+                        <!-- nav content -->
+                        <StackPanel Grid.Column="1"
+                                    Margin="12,10,12,10">
+                            <TextBlock Text="Navigation"
+                                       Foreground="#9CA3AF"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Margin="2,0,0,4"/>
 
-                        <!-- NOTE: these buttons only reuse existing handlers
-                             so they DO NOT break your code-behind -->
+                            <Button Style="{StaticResource SidebarNavButton}"
+                                    Content="Game Profiles"
+                                    Click="OpenDirectoryWindow_Click"/>
 
-                        <!-- Opens your directory/profile selector -->
-                        <Button Style="{StaticResource SidebarNavButton}"
-                                Content="Game Profiles"
-                                Click="OpenDirectoryWindow_Click"/>
+                            <Button Style="{StaticResource SidebarNavButton}"
+                                    Content="AES Keys"
+                                    Click="OpenAESWindow_Click"/>
 
-                        <!-- Opens AES window -->
-                        <Button Style="{StaticResource SidebarNavButton}"
-                                Content="AES Keys"
-                                Click="OpenAESWindow_Click"/>
+                            <Button Style="{StaticResource SidebarNavButton}"
+                                    Content="Asset Search"
+                                    Click="OpenSearchWindow_Click"/>
 
-                        <!-- Opens global search window -->
-                        <Button Style="{StaticResource SidebarNavButton}"
-                                Content="Asset Search"
-                                Click="OpenSearchWindow_Click"/>
+                            <Button Style="{StaticResource SidebarNavButton}"
+                                    Content="Settings"
+                                    Click="OpenSettingsWindow_Click"/>
 
-                        <!-- Opens settings -->
-                        <Button Style="{StaticResource SidebarNavButton}"
-                                Content="Settings"
-                                Click="OpenSettingsWindow_Click"/>
+                            <Separator Margin="0,16,0,8"/>
 
-                        <Separator Margin="0,16,0,8"/>
+                            <TextBlock Text="Tips"
+                                       Foreground="#6B7280"
+                                       FontSize="11"
+                                       Margin="2,0,0,4"/>
 
-                        <TextBlock Text="Tips"
-                                   Foreground="#6B7280"
-                                   FontSize="11"
-                                   Margin="2,0,0,4"/>
-
-                        <TextBlock Text="• Load AES + Archives first."
-                                   Foreground="#6B7280"
-                                   FontSize="11"
-                                   TextWrapping="Wrap" />
-                        <TextBlock Text="• Browse Game Folders, then Packages."
-                                   Foreground="#6B7280"
-                                   FontSize="11"
-                                   TextWrapping="Wrap"
-                                   Margin="0,2,0,0"/>
-                    </StackPanel>
-                </Grid>
+                            <TextBlock Text="• Load AES + Archives first."
+                                       Foreground="#6B7280"
+                                       FontSize="11"
+                                       TextWrapping="Wrap" />
+                            <TextBlock Text="• Browse Game Folders, then Packages."
+                                       Foreground="#6B7280"
+                                       FontSize="11"
+                                       TextWrapping="Wrap"
+                                       Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Grid>
                 </Border>
             </Border>
 
-
-            <!-- MAIN CONTENT (LEFT = TABS, RIGHT = PREVIEW PANE) -->
+            <!-- MAIN CONTENT -->
             <Grid Grid.Column="1" Margin="10,0,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="320"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- LEFT PANEL: YOUR EXISTING TABCONTROL -->
+                <!-- LEFT: TABS + PILL HEADER -->
                 <Border Grid.Column="0"
-                        Margin="0"
                         CornerRadius="12"
                         Opacity="0.92"
                         BorderThickness="1"
                         BorderBrush="#26262C">
                     <Border.Effect>
-                        <DropShadowEffect Color="#5AA6FF" BlurRadius="25" ShadowDepth="0" Opacity="0.35"/> 
+                        <DropShadowEffect Color="#5AA6FF"
+                                          BlurRadius="25"
+                                          ShadowDepth="0"
+                                          Opacity="0.35"/>
                     </Border.Effect>
-                    <Border Padding="10"
+                    <Border Background="#14141A"
                             CornerRadius="12"
-                            Background="#14141A"
-                            BorderThickness="0">
-                        <TabControl x:Name="MainTabControl"
-                                Background="#14141A"
-                                Foreground="White">
+                            BorderThickness="0"
+                            Padding="0">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
 
-                            <!-- Archives -->
-                        <TabItem Background="White">
-                            <TabItem.Header>
-                                <TextBlock Text="Archives"
-                                           Foreground="Black"/>
-                            </TabItem.Header>
-                            <DockPanel>
+                            <!-- PILL HEADER -->
+                            <Grid Grid.Row="0"
+                                  Margin="3,5,3,0"
+                                  HorizontalAlignment="Stretch">
+                                <Border Background="#111218"
+                                        CornerRadius="24"
+                                        Padding="24,10"
+                                        BorderThickness="1"
+                                        BorderBrush="#26262C"
+                                        HorizontalAlignment="Center">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="#5AA6FF"
+                                                          BlurRadius="25"
+                                                          ShadowDepth="0"
+                                                          Opacity="0.40"/>
+                                    </Border.Effect>
 
-                                <!-- Top toolbar -->
-                                <StackPanel DockPanel.Dock="Top"
-                                            Orientation="Horizontal"
-                                            Background="Transparent"
-                                            HorizontalAlignment="Center"
-                                            Margin="0,0,0,4">
-                                        <StackPanel.Effect>
-                                            <DropShadowEffect Color="RoyalBlue"
-                                                  BlurRadius="25"
-                                                  ShadowDepth="0"
-                                                  Opacity="0.6"/>
-                                        </StackPanel.Effect>
-                                        <Button x:Name="BtnLoadArchives"
-                                            Content="Load AES and Mount Archives"
-                                            FontWeight="Bold"
-                                            Width="220" Height="30"
-                                            Margin="0,4,0,4"
-                                            Click="BtnLoadArchives_Click"
-                                            Foreground="White"
-                                            BorderBrush="RoyalBlue"
-                                            Background="#FF14254E"/>
+                                    <StackPanel Orientation="Horizontal"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+
+                                        <!-- ARCHIVES -->
+                                        <StackPanel HorizontalAlignment="Center"
+                                                    Margin="5,5,5,0">
+                                            <TextBlock Text="Archives"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#E5E7EB"
+                                                       Cursor="Hand"
+                                                       Padding="5,0"
+                                                       MouseLeftButtonDown="PillHeader_Archives_Click">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Opacity" Value="0.7"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="0">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <Border Height="3"
+                                                    Width="30"
+                                                    CornerRadius="2"
+                                                    Margin="0,4,0,0"
+                                                    Background="#5AA6FF">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Opacity" Value="0"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="0">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <!-- GAME FOLDERS -->
+                                        <StackPanel HorizontalAlignment="Center"
+                                                    Margin="5,5,5,0">
+                                            <TextBlock Text="Game Folders"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#E5E7EB"
+                                                       Cursor="Hand"
+                                                       Padding="5,0"
+                                                       MouseLeftButtonDown="PillHeader_GameFolders_Click">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Opacity" Value="0.7"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="1">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <Border Height="3"
+                                                    Width="30"
+                                                    CornerRadius="2"
+                                                    Margin="0,4,0,0"
+                                                    Background="#5AA6FF">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Opacity" Value="0"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="1">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </StackPanel>
+
+                                        <!-- GAME PACKAGES -->
+                                        <StackPanel HorizontalAlignment="Center" Margin="5,5,5,0">
+                                            <TextBlock Text="Game Packages"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#E5E7EB"
+                                                       Cursor="Hand"
+                                                       Padding="5,0"
+                                                       MouseLeftButtonDown="PillHeader_GamePackages_Click">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Opacity" Value="0.7"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="2">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="White"/>
+                                                            </DataTrigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+
+                                            <Border Height="3"
+                                                    Width="30"
+                                                    CornerRadius="2"
+                                                    Margin="0,4,0,0"
+                                                    Background="#5AA6FF">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Opacity" Value="0"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding SelectedIndex, ElementName=MainTabControl}"
+                                                                         Value="2">
+                                                                <Setter Property="Opacity" Value="1"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </StackPanel>
+
                                     </StackPanel>
+                                </Border>
+                            </Grid>
 
-                                <!-- Archives List -->
-                                <TreeView x:Name="ArchivesTreeView"
-                                          Style="{StaticResource DarkTreeView}"
-                                          ItemContainerStyle="{StaticResource DarkTreeViewItem}"
-                                          SelectedItemChanged="ArchivesTreeView_SelectedItemChanged"
-                                          Foreground="White"
-                                          Background="#14141A"/>
-                            </DockPanel>
-                        </TabItem>
+                            <!-- TAB CONTENT (headers hidden) -->
+                            <TabControl x:Name="MainTabControl"
+                                Grid.Row="1"
+                                SelectedIndex="0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Padding="10,6,10,0">
 
-                        <!-- GAME FOLDERS (WITH FOLDER ICONS) -->
-                        <TabItem Background="White">
-                            <TabItem.Header>
-                                <TextBlock Text="Game Folders"
-                                           Foreground="Black"/>
-                            </TabItem.Header>
-                            <TreeView x:Name="GameFoldersTreeView"
-                                      Style="{StaticResource DarkTreeView}"
-                                      SelectedItemChanged="GameFoldersTreeView_SelectedItemChanged"
-                                      MouseDoubleClick="GameFoldersTreeView_MouseDoubleClick">
+                                <!-- Hide default headers -->
+                                <TabControl.Template>
+                                    <ControlTemplate TargetType="TabControl">
+                                        <Grid>
+                                            <!-- Hidden default tab headers -->
+                                            <Grid x:Name="HeaderPanel" Visibility="Collapsed">
+                                                <ItemsPresenter />
+                                            </Grid>
 
-                                <TreeView.Resources>
+                                            <!-- Shows the selected tab's content -->
+                                            <ContentPresenter ContentSource="SelectedContent" />
+                                        </Grid>
+                                    </ControlTemplate>
+                                </TabControl.Template>
 
-                                    <!-- Folder closed -->
-                                    <DataTemplate x:Key="FolderClosedTemplate">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="{StaticResource FolderClosedIcon}"
-                                                   Width="16" Height="16"
-                                                   Margin="0,0,6,0"/>
-                                            <TextBlock Text="{Binding}"
-                                                       Foreground="White"/>
+
+                                <!-- ARCHIVES TAB -->
+                                <TabItem Header="Archives">
+                                    <Grid Margin="0,10,0,0">
+                                        <StackPanel>
+                                            <Button x:Name="BtnLoadArchives"
+                                                    Content="Load AES and Mount Archives"
+                                                    FontWeight="Bold"
+                                                    Width="220" Height="30"
+                                                    HorizontalAlignment="Center"
+                                                    Margin="0,0,0,10"
+                                                    Click="BtnLoadArchives_Click"
+                                                    Foreground="White"
+                                                    BorderBrush="RoyalBlue"
+                                                    Background="#FF14254E">
+                                                <Button.Effect>
+                                                    <DropShadowEffect Color="RoyalBlue"
+                                                                      BlurRadius="25"
+                                                                      ShadowDepth="0"
+                                                                      Opacity="0.55"/>
+                                                </Button.Effect>
+                                            </Button>
+
+                                            <TreeView x:Name="ArchivesTreeView"
+                                                      Style="{StaticResource DarkTreeView}"
+                                                      ItemContainerStyle="{StaticResource DarkTreeViewItem}"
+                                                      SelectedItemChanged="ArchivesTreeView_SelectedItemChanged"
+                                                      Foreground="White"
+                                                      Background="#14141A"/>
                                         </StackPanel>
-                                    </DataTemplate>
+                                    </Grid>
+                                </TabItem>
 
-                                    <!-- Folder open -->
-                                    <DataTemplate x:Key="FolderOpenTemplate">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="{StaticResource FolderOpenIcon}"
-                                                   Width="16" Height="16"
-                                                   Margin="0,0,6,0"/>
-                                            <TextBlock Text="{Binding}"
-                                                       Foreground="White"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-
-                                    <!-- Folder style (ONLY APPLIES HERE) -->
-                                    <Style TargetType="TreeViewItem">
-                                        <Setter Property="HeaderTemplate"
-                                                Value="{StaticResource FolderClosedTemplate}"/>
-                                        <Style.Triggers>
-                                            <Trigger Property="IsExpanded" Value="True">
-                                                <Setter Property="HeaderTemplate"
-                                                        Value="{StaticResource FolderOpenTemplate}"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-
-                                </TreeView.Resources>
-
-                            </TreeView>
-                        </TabItem>
-
-                        <!-- GAME PACKAGES (WITH ASSET ICONS) -->
-                        <TabItem Background="White">
-                            <TabItem.Header>
-                                <TextBlock Text="Game Packages"
-                                           Foreground="Black"/>
-                            </TabItem.Header>
-                            <TreeView Name="GamePackagesTreeView"
-                                      SelectedItemChanged="GamePackagesTreeView_SelectedItemChanged"
-                                      Style="{StaticResource DarkTreeView}">
-                                <TreeView.Resources>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="IsHitTestVisible" Value="False"/>
-                                    </Style>
-                                    <Style TargetType="Image">
-                                        <Setter Property="IsHitTestVisible" Value="False"/>
-                                    </Style>
-                                </TreeView.Resources>
-
-                                <TreeView.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Export Textures"
-                                                  Click="ExportTextures_Click"/>
-                                        <MenuItem Header="Export Raw JSON"
-                                                  Click="ExportJson_Click"/>
-                                        <MenuItem Header="Export Referenced Textures"
-                                                  Click="ExportReferencedTextures_Click"/>
-                                    </ContextMenu>
-                                </TreeView.ContextMenu>
-
-                                <TreeView.ItemContainerStyle>
-                                    <Style TargetType="TreeViewItem">
-                                        <Setter Property="HeaderTemplate">
-                                            <Setter.Value>
-                                                <DataTemplate>
-                                                    <ContentPresenter Content="{Binding}" />
+                                <!-- GAME FOLDERS TAB -->
+                                <TabItem Header="Game Folders">
+                                    <Grid Margin="0,10,0,0">
+                                        <TreeView x:Name="GameFoldersTreeView"
+                                                  Style="{StaticResource DarkTreeView}"
+                                                  SelectedItemChanged="GameFoldersTreeView_SelectedItemChanged"
+                                                  MouseDoubleClick="GameFoldersTreeView_MouseDoubleClick">
+                                            <TreeView.Resources>
+                                                <DataTemplate x:Key="FolderClosedTemplate">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{StaticResource FolderClosedIcon}"
+                                                               Width="16" Height="16"
+                                                               Margin="0,0,6,0"/>
+                                                        <TextBlock Text="{Binding}" Foreground="White"/>
+                                                    </StackPanel>
                                                 </DataTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </TreeView.ItemContainerStyle>
-                            </TreeView>
-                        </TabItem>
 
-                    </TabControl>
-                  </Border>
-               </Border>
+                                                <DataTemplate x:Key="FolderOpenTemplate">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{StaticResource FolderOpenIcon}"
+                                                               Width="16" Height="16"
+                                                               Margin="0,0,6,0"/>
+                                                        <TextBlock Text="{Binding}" Foreground="White"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
 
-                <!-- RIGHT PANEL: PREVIEW (SINGLE / DUAL PANE) -->
+                                                <Style TargetType="TreeViewItem">
+                                                    <Setter Property="HeaderTemplate"
+                                                            Value="{StaticResource FolderClosedTemplate}"/>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsExpanded" Value="True">
+                                                            <Setter Property="HeaderTemplate"
+                                                                    Value="{StaticResource FolderOpenTemplate}"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TreeView.Resources>
+                                        </TreeView>
+                                    </Grid>
+                                </TabItem>
+
+                                <!-- GAME PACKAGES TAB -->
+                                <TabItem Header="Game Packages">
+                                    <Grid Margin="0,10,0,0">
+                                        <TreeView x:Name="GamePackagesTreeView"
+                                                  Style="{StaticResource DarkTreeView}"
+                                                  SelectedItemChanged="GamePackagesTreeView_SelectedItemChanged">
+
+                                            <TreeView.Resources>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                                </Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="IsHitTestVisible" Value="False"/>
+                                                </Style>
+                                            </TreeView.Resources>
+
+                                            <TreeView.ContextMenu>
+                                                <ContextMenu Style="{StaticResource DarkContextMenu}">
+                                                    <MenuItem Header="Export Texture"
+                                                              Click="ExportTextures_Click"
+                                                              Style="{StaticResource DarkMenuItem}"/>
+                                                    <MenuItem Header="Export Raw JSON"
+                                                              Click="ExportJson_Click"
+                                                              Style="{StaticResource DarkMenuItem}"/>
+                                                    <MenuItem Header="Export Referenced Textures"
+                                                              Click="ExportReferencedTextures_Click"
+                                                              Style="{StaticResource DarkMenuItem}"/>
+                                                </ContextMenu>
+                                            </TreeView.ContextMenu>
+
+                                            <TreeView.ItemContainerStyle>
+                                                <Style TargetType="TreeViewItem">
+                                                    <Setter Property="HeaderTemplate">
+                                                        <Setter.Value>
+                                                            <DataTemplate>
+                                                                <ContentPresenter Content="{Binding}"/>
+                                                            </DataTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </TreeView.ItemContainerStyle>
+                                        </TreeView>
+                                    </Grid>
+                                </TabItem>
+                            </TabControl>
+                        </Grid>
+                    </Border>
+                </Border>
+
+                <!-- RIGHT: PREVIEW PANEL -->
                 <Border Grid.Column="1"
                         BorderThickness="1"
                         CornerRadius="12"
@@ -402,105 +708,169 @@
                         BorderBrush="#26262C"
                         Opacity="0.92">
                     <Border.Effect>
-                        <DropShadowEffect Color="#5AA6FF" BlurRadius="25" ShadowDepth="0" Opacity="0.35"/>
+                        <DropShadowEffect Color="#5AA6FF"
+                                          BlurRadius="25"
+                                          ShadowDepth="0"
+                                          Opacity="0.35"/>
                     </Border.Effect>
-                    <Border Padding="10"
+                    <Border Background="#14141A"
                             CornerRadius="12"
-                            Background="#14141A"
-                            BorderThickness="0">
-                    <Grid>
-                        <!-- ONE-PANE MODE (DEFAULT) -->
+                            BorderThickness="0"
+                            Padding="0">
+                        <Grid>
+
+                            <!-- Single pane -->
                             <Grid x:Name="SinglePaneGrid">
                                 <ListBox x:Name="JsonList"
-                                     Background="#111"
-                                     Foreground="White"
-                                     BorderThickness="0"
-                                     FontFamily="Consolas"
-                                     ScrollViewer.CanContentScroll="True"
-                                     VirtualizingStackPanel.IsVirtualizing="True"
-                                     VirtualizingStackPanel.VirtualizationMode="Recycling"
-                                     MouseDoubleClick="JsonList_MouseDoubleClick">
-
+                                         Background="#111"
+                                         Foreground="White"
+                                         BorderThickness="0"
+                                         FontFamily="Consolas"
+                                         ScrollViewer.CanContentScroll="True"
+                                         VirtualizingStackPanel.IsVirtualizing="True"
+                                         VirtualizingStackPanel.VirtualizationMode="Recycling"
+                                         MouseDoubleClick="JsonList_MouseDoubleClick">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <VirtualizingStackPanel/>
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
-
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <local:JsonLineControl Text="{Binding}" />
+                                            <local:JsonLineControl Text="{Binding}"/>
                                         </DataTemplate>
                                     </ListBox.ItemTemplate>
                                 </ListBox>
                             </Grid>
 
+                            <!-- Dual pane (text + image) -->
+                            <Grid x:Name="DualPaneGrid" Visibility="Collapsed">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="350" />
+                                </Grid.ColumnDefinitions>
 
-                            <!-- TWO-PANE MODE (FOR TEXTURES) -->
-                        <Grid x:Name="DualPaneGrid" Visibility="Collapsed">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="350" />
-                            </Grid.ColumnDefinitions>
+                                <ScrollViewer Grid.Column="0"
+                                              Background="#111"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Auto">
+                                    <TextBox x:Name="PreviewText_Dual"
+                                             IsReadOnly="True"
+                                             TextWrapping="Wrap"
+                                             FontFamily="Consolas"
+                                             Background="#111"
+                                             Foreground="White"
+                                             BorderThickness="0"
+                                             Padding="6"/>
+                                </ScrollViewer>
 
-                            <!-- LEFT: TEXT -->
-                            <ScrollViewer Grid.Column="0"
-                                          Background="#111"
-                                          VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Auto">
-                                <TextBox x:Name="PreviewText_Dual"
-                                         IsReadOnly="True"
-                                         TextWrapping="Wrap"
-                                         FontFamily="Consolas"
-                                         Background="#111"
-                                         Foreground="White"
-                                         BorderThickness="0"
-                                         Padding="6"/>
-                            </ScrollViewer>
-
-                            <!-- RIGHT: IMAGE -->
-                            <Border Grid.Column="1"
-                                    Background="#111"
-                                    BorderBrush="#222"
-                                    BorderThickness="1"
-                                    Padding="6">
-                                <!-- Square container -->
-                                <Viewbox Stretch="Uniform">
-                                    <Grid Width="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}">
-                                        <Image x:Name="PreviewImage"
-                                               Stretch="Uniform"
-                                               SnapsToDevicePixels="True"
-                                               RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-                                    </Grid>
-                                </Viewbox>
-                            </Border>
-                        </Grid>
-
-                        <!-- LOADING SPINNER: floats over preview -->
-                            <Grid x:Name="LoadingSpinner"
-                              Width="22" Height="22"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Top"
-                              Margin="0,10,10,0"
-                              Visibility="Hidden"
-                              RenderTransformOrigin="0.5,0.5">
-
-                                <Grid.RenderTransform>
-                                    <RotateTransform Angle="0"/>
-                                </Grid.RenderTransform>
-
-                                <Path Stroke="{StaticResource SpinnerBrush}"
-                                  StrokeThickness="3"
-                                  StrokeStartLineCap="Round"
-                                  StrokeEndLineCap="Round"
-                                  Data="M 11 2 A 9 9 0 0 1 20 11"/>
+                                <Border Grid.Column="1"
+                                        Background="#111"
+                                        BorderBrush="#222"
+                                        BorderThickness="1"
+                                        Padding="6">
+                                    <Viewbox Stretch="Uniform">
+                                        <Grid Width="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}">
+                                            <Image x:Name="PreviewImage"
+                                                   Stretch="Uniform"
+                                                   SnapsToDevicePixels="True"
+                                                   RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                                        </Grid>
+                                    </Viewbox>
+                                </Border>
                             </Grid>
-                        </Grid>
-                </Border>
-             </Border>
 
+                            <!-- LOADING OVERLAY -->
+                            <Grid x:Name="LoadingOverlay"
+                                  Visibility="Collapsed"
+                                  Background="#00000055"
+                                  Panel.ZIndex="9999">
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+
+                                    <!-- background ring -->
+                                    <Ellipse Width="40" Height="40"
+                                             Stroke="#1AFFFFFF"
+                                             StrokeThickness="4"/>
+
+                                    <!-- main spinning arc -->
+                                    <Grid RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                                        </Grid.RenderTransform>
+
+                                        <Path StrokeThickness="4"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round">
+                                            <Path.Stroke>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#5AA6FF" Offset="0"/>
+                                                    <GradientStop Color="#A47CFF" Offset="0.5"/>
+                                                    <GradientStop Color="#5AA6FF" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Path.Stroke>
+                                            <Path.Data>
+                                                <PathGeometry>
+                                                    <PathFigure StartPoint="20,4">
+                                                        <ArcSegment Point="36,20"
+                                                                    Size="16,16"
+                                                                    SweepDirection="Clockwise"
+                                                                    IsLargeArc="False"/>
+                                                    </PathFigure>
+                                                </PathGeometry>
+                                            </Path.Data>
+                                            <Path.Effect>
+                                                <DropShadowEffect Color="#6EA8FF"
+                                                                  BlurRadius="45"
+                                                                  Opacity="0.9"
+                                                                  ShadowDepth="0"/>
+                                            </Path.Effect>
+                                        </Path>
+                                    </Grid>
+
+                                    <!-- energy sweep -->
+                                    <Grid RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform x:Name="SweepRotate" Angle="0"/>
+                                        </Grid.RenderTransform>
+
+                                        <Path StrokeThickness="4"
+                                              Opacity="0.35"
+                                              StrokeStartLineCap="Round"
+                                              StrokeEndLineCap="Round">
+                                            <Path.Stroke>
+                                                <RadialGradientBrush RadiusX="1" RadiusY="1"
+                                                                     Center="0.5,0.5"
+                                                                     GradientOrigin="0.5,0.5">
+                                                    <GradientStop Color="#FF00CAFF" Offset="0"/>
+                                                    <GradientStop Color="#A08230FF" Offset="0.4"/>
+                                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                                </RadialGradientBrush>
+                                            </Path.Stroke>
+                                            <Path.Effect>
+                                                <DropShadowEffect Color="#A47CFF"
+                                                                  BlurRadius="45"
+                                                                  ShadowDepth="0"
+                                                                  Opacity="0.75"/>
+                                            </Path.Effect>
+                                            <Path.Data>
+                                                <PathGeometry>
+                                                    <PathFigure StartPoint="20,4">
+                                                        <ArcSegment Point="36,20"
+                                                                    Size="16,16"
+                                                                    SweepDirection="Clockwise"
+                                                                    IsLargeArc="False"/>
+                                                    </PathFigure>
+                                                </PathGeometry>
+                                            </Path.Data>
+                                        </Path>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                        </Grid>
+                    </Border>
+                </Border>
             </Grid>
         </Grid>
-
     </DockPanel>
 </Window>

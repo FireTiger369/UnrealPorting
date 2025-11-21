@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using UnrealPorting2;
 
 namespace UnrealPorting
 {

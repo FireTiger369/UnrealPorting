@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Threading;
 using UnrealPorting.Properties;
 
-namespace UnrealPorting2
+namespace UnrealPorting
 {
     public partial class App : Application
     {
@@ -23,7 +23,12 @@ namespace UnrealPorting2
             }
         }
         private static GameProfile? _selectedProfile;
-
+        public static string CurrentVersion =>
+            System.Reflection.Assembly
+                .GetExecutingAssembly()
+                .GetName()
+                .Version?
+                .ToString() ?? "0.0.0.0";
 
         public App()
         {

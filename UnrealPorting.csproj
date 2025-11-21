@@ -65,6 +65,17 @@
     <None Update="Resources\oo2core_5_win64.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Updates\update_manifest.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Updates\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" />
   </ItemGroup>
 
 </Project>

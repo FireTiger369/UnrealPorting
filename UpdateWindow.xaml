@@ -1,0 +1,163 @@
+﻿<Window x:Class="UnrealPorting.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Update Available"
+        Width="520" Height="360"
+        Background="#111218"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <!-- FortForge color palette -->
+        <SolidColorBrush x:Key="PanelBorderBrush" Color="#26262C"/>
+        <SolidColorBrush x:Key="PanelBgBrush" Color="#14141A"/>
+        <SolidColorBrush x:Key="GlowBlue" Color="#5AA6FF"/>
+        <DropShadowEffect x:Key="PanelShadow"
+                          Color="#5AA6FF"
+                          BlurRadius="25"
+                          ShadowDepth="0"
+                          Opacity="0.35"/>
+    </Window.Resources>
+
+    <Grid Background="#111218" Margin="20">
+
+        <Border CornerRadius="12"
+                Background="{StaticResource PanelBgBrush}"
+                BorderBrush="{StaticResource PanelBorderBrush}"
+                BorderThickness="1"
+                Effect="{StaticResource PanelShadow}"
+                Padding="20">
+
+            <Grid>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Header -->
+                    <RowDefinition Height="*"/>
+                    <!-- Changelog -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Buttons -->
+                </Grid.RowDefinitions>
+
+                <!-- Title -->
+                <TextBlock Text="A New Update is Available"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="#E5E7EB"
+                           Margin="0 0 0 10"/>
+
+                <!-- Changelog Box -->
+                <Border Grid.Row="1"
+                        Background="#0E0E10"
+                        BorderBrush="#26262C"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="10"
+                        Effect="{StaticResource PanelShadow}">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="ChangelogText"
+                                   TextWrapping="Wrap"
+                                   Foreground="#D5D5D5"
+                                   FontSize="14"/>
+                    </ScrollViewer>
+
+                </Border>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            Margin="0 15 0 0">
+
+                    <!-- Skip -->
+                    <Button Content="Skip"
+                            Width="90"
+                            Height="32"
+                            FontWeight="SemiBold"
+                            Margin="0 0 10 0"
+                            Foreground="#E5E7EB"
+                            Background="#20212A"
+                            BorderBrush="#2A2A2D"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            Click="Skip_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#20212A"/>
+                                <Setter Property="Foreground" Value="#E5E7EB"/>
+                                <Setter Property="BorderBrush" Value="#2A2A2D"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bg"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="6">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bg" Property="Background" Value="#2C2D38"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <!-- Update -->
+                    <Button Content="Update"
+                            Width="110"
+                            Height="32"
+                            FontWeight="SemiBold"
+                            Foreground="White"
+                            Background="#5AA6FF"
+                            BorderBrush="#5AA6FF"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            Click="Update_Click">
+                        <Button.Effect>
+                            <DropShadowEffect Color="#5AA6FF"
+                                              BlurRadius="30"
+                                              ShadowDepth="0"
+                                              Opacity="0.65"/>
+                        </Button.Effect>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bg"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="6">
+                                                <ContentPresenter HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bg" Property="Background" Value="#7AB7FF"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</Window>

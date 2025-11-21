@@ -7,6 +7,7 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse_Conversion.Textures;
 using Newtonsoft.Json;
+using SevenZip.Compression.LZ;
 using SkiaSharp;
 using System;
 using System.Drawing;
@@ -33,12 +34,13 @@ namespace UnrealPorting.Helpers
         {
             if (selectedItem?.Tag == null)
             {
+                mainWindow.HideSpinner();
                 ShowText(mainWindow, "(No file selected)");
                 return;
             }
 
             string filePath = selectedItem.Tag.ToString()!;
-            ShowText(mainWindow, "Loading preview...");
+            mainWindow.ShowSpinner();
             await Task.Delay(10);
 
             try
@@ -48,6 +50,7 @@ namespace UnrealPorting.Helpers
 
                 if (reader == null)
                 {
+                    mainWindow.HideSpinner();
                     ShowText(mainWindow, $"File not found:\n{filePath}");
                     return;
                 }
@@ -75,6 +78,7 @@ namespace UnrealPorting.Helpers
             }
             catch (Exception ex)
             {
+                mainWindow.HideSpinner();
                 ShowText(mainWindow, $"Preview error:\n{ex}");
             }
         }
@@ -246,6 +250,7 @@ namespace UnrealPorting.Helpers
                 // PNG (right pane)
                 using (var image = sk.Encode(SKEncodedImageFormat.Png, 100))
                 {
+                    window.HideSpinner();
                     window.ShowDualPane(json, image.ToArray());
                 }
 
@@ -261,10 +266,12 @@ namespace UnrealPorting.Helpers
                     PropertySerializer.SerializeUObject(export),
                     Formatting.Indented);
 
+                window.HideSpinner();
                 ShowText(window, json);
             }
             catch (Exception ex)
             {
+                window.HideSpinner();
                 ShowText(window, $"Failed to serialize export:\n{ex.Message}");
             }
         }
@@ -298,16 +305,8 @@ namespace UnrealPorting.Helpers
         // ------------------------------------------------------------
         private static void ShowText(MainWindow mainWindow, string text)
         {
-            // Switch to SINGLE-PANE mode
-            mainWindow.SinglePaneGrid.Visibility = Visibility.Visible;
-            mainWindow.DualPaneGrid.Visibility = Visibility.Collapsed;
-
-            // Hide image preview if it was previously shown
-            mainWindow.PreviewImage.Visibility = Visibility.Collapsed;
-
-            // Fill the virtualized JSON viewer
-            var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-            mainWindow.JsonList.ItemsSource = lines;
+            mainWindow.HideSpinner();
+            mainWindow.ShowSinglePaneText(text);
         }
 
         public static void DeserializeAllExports(this IPackage package)

@@ -1,11 +1,13 @@
 ﻿using CUE4Parse.Compression;
 using CUE4Parse.MappingsProvider;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using Newtonsoft.Json;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +17,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using UnrealPorting.Helpers;
 using UnrealPorting.Properties;
-using UnrealPorting2;
+using UnrealPorting.Updater;
 namespace UnrealPorting
 {
     public partial class MainWindow : Window
@@ -39,7 +41,6 @@ namespace UnrealPorting
         private CancellationTokenSource? _loadCts;
         private const int MAX_FILES_PER_FOLDER = 3000;
         private string _oodleDllPath = "";
-
         public MainWindow()
         {
             Console.WriteLine("[DEBUG] MainWindow created — UI hooks active");
@@ -75,6 +76,7 @@ namespace UnrealPorting
             {
                 Console.WriteLine($"[WARN] Failed to load AES keys: {ex.Message}");
             }
+            _ = CheckForUpdatesAsync();
         }
 
         #region Directory & AES Handling
@@ -529,7 +531,11 @@ namespace UnrealPorting
                 string folder = Path.GetDirectoryName(assetPath).Replace("\\", "/");
 
                 // 3) Expand folders
-                await ExpandFolderPath(folder);
+                await WithSpinner(async () =>
+                {
+                    await ExpandFolderPath(folder);
+                    LoadAssetsForSelectedFolder(folder);
+                });
 
                 // 4) Load assets for that folder
                 LoadAssetsForSelectedFolder(folder);
@@ -557,7 +563,7 @@ namespace UnrealPorting
             win.Show();
         }
 
-        private void BtnLoadArchives_Click(object sender, RoutedEventArgs e)
+        private async void BtnLoadArchives_Click(object sender, RoutedEventArgs e)
         {
             var profile = App.SelectedProfile;
 
@@ -567,69 +573,121 @@ namespace UnrealPorting
                 return;
             }
 
-            // 1) Find Paks directory
-            string? paksDir = ResolvePaksDirectory(profile.Directory);
-            if (paksDir == null)
+            ShowSpinner(); // 🔵 start animation immediately
+
+            await Task.Run(() =>
             {
-                MessageBox.Show("Could not find the game's Paks folder.");
-                return;
-            }
-
-            // 2) Initialize Oodle
-            EnsureOodleInitialized(paksDir);
-
-            // 3) Load AES keys from profile
-            var guidKeys = profile.AesGuidKeys
-                .ToDictionary(kv => Guid.Parse(kv.Key), kv => kv.Value);
-
-            var filenameKeys = new Dictionary<string, string>(profile.AesFileKeys);
-
-            // 4) Build pak reader
-            _pakReader?.Dispose();
-            _pakReader = new AppPakReader(
-                paksDir,
-                guidKeys,
-                filenameKeys,
-                profile.MappingPath
-            );
-
-            // 5) Build global file list  (FIX #1)
-            _globalFilePaths.Clear();
-            foreach (var path in _pakReader.EnumerateFilePaths())
-            {
-                if (!string.IsNullOrWhiteSpace(path))
-                    _globalFilePaths.Add(path);
-            }
-
-            Console.WriteLine($"[DEBUG] Indexed {_globalFilePaths.Count:N0} files.");
-
-            // 6) Build folder trie  (FIX #2)
-            var interner = new StringInterner();
-            _folderTrie = new FolderTrie(interner);
-
-            foreach (var raw in _globalFilePaths)
-            {
-                if (raw.StartsWith("FortniteGame/", StringComparison.OrdinalIgnoreCase) ||
-                    raw.StartsWith("Engine/", StringComparison.OrdinalIgnoreCase))
+                // 1) Find Paks directory
+                string? paksDir = ResolvePaksDirectory(profile.Directory);
+                if (paksDir == null)
                 {
-                    _folderTrie.AddPath(raw);
+                    Dispatcher.Invoke(() =>
+                        MessageBox.Show("Could not find the game's Paks folder."));
+                    return;
                 }
-            }
 
-            _folderTrie.Compact();
+                // 2) Initialize Oodle
+                EnsureOodleInitialized(paksDir);
 
-            // 7) Update GameFolders UI  (FIX #3)
-            BuildFolderTreeUI();
+                // 3) Load AES keys from profile
+                var guidKeys = profile.AesGuidKeys
+                    .ToDictionary(kv => Guid.Parse(kv.Key), kv => kv.Value);
 
-            // 8) Update Archives list (your original line)
-            LoadArchivesListUI();
+                var filenameKeys = new Dictionary<string, string>(profile.AesFileKeys);
 
-            MessageBox.Show("Archives mounted and loaded.");
+                // 4) Build pak reader (HEAVY)
+                _pakReader?.Dispose();
+                _pakReader = new AppPakReader(
+                    paksDir,
+                    guidKeys,
+                    filenameKeys,
+                    profile.MappingPath
+                );
+
+                // 5) Build global file list (FIX #1)
+                _globalFilePaths.Clear();
+                foreach (var path in _pakReader.EnumerateFilePaths())
+                {
+                    if (!string.IsNullOrWhiteSpace(path))
+                        _globalFilePaths.Add(path);
+                }
+
+                Console.WriteLine($"[DEBUG] Indexed {_globalFilePaths.Count:N0} files.");
+
+                // 6) Build folder trie  (FIX #2)
+                var interner = new StringInterner();
+                _folderTrie = new FolderTrie(interner);
+
+                foreach (var raw in _globalFilePaths)
+                {
+                    if (raw.StartsWith("FortniteGame/", StringComparison.OrdinalIgnoreCase) ||
+                        raw.StartsWith("Engine/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _folderTrie.AddPath(raw);
+                    }
+                }
+
+                _folderTrie.Compact();
+
+                // 7 + 8) UI must be updated on dispatcher
+                Dispatcher.Invoke(() =>
+                {
+                    BuildFolderTreeUI();
+                    LoadArchivesListUI();
+                    MessageBox.Show("Archives mounted and loaded.");
+                });
+            });
+
+            HideSpinner(); // 🔵 hide when background work finishes
         }
 
         #endregion
 
         #region Helpers
+
+        public void ShowSpinner()
+        {
+            LoadingOverlay.Visibility = Visibility.Visible;
+
+            var sb = (Storyboard)FindResource("SpinnerPremium");
+            sb.Begin();
+        }
+
+        public void HideSpinner()
+        {
+            var sb = (Storyboard)FindResource("SpinnerPremium");
+            sb.Stop();
+
+            LoadingOverlay.Visibility = Visibility.Collapsed;
+        }
+        public async Task WithSpinner(Func<Task> action)
+        {
+            ShowSpinner();
+            try
+            {
+                await action();
+            }
+            finally
+            {
+                HideSpinner();
+            }
+        }
+
+        private void PillHeader_Archives_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MainTabControl.SelectedIndex = 0;
+        }
+
+        private void PillHeader_GameFolders_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MainTabControl.SelectedIndex = 1;
+        }
+
+        private void PillHeader_GamePackages_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MainTabControl.SelectedIndex = 2;
+        }
+        private int _lastTabIndex = 0;
         private Task FadeOut(UIElement element)
         {
             if (element == null) return Task.CompletedTask;
@@ -855,28 +913,78 @@ namespace UnrealPorting
                 Console.WriteLine("[Oodle] ERROR initializing: " + ex);
             }
         }
+        // ----------------------
+        // UPDATE CHECKER
+        // ----------------------
+        private async Task CheckForUpdatesAsync()
+        {
+            const string MANIFEST_URL =
+                "https://raw.githubusercontent.com/FireTiger369/UnrealPorting/main/updates/update_manifest.json";
+
+            try
+            {
+                using var http = new HttpClient();
+                string json = await http.GetStringAsync(MANIFEST_URL);
+
+                var manifest = JsonConvert.DeserializeObject<UpdateManifest>(json);
+                if (manifest == null)
+                {
+                    Console.WriteLine("[UPDATE] Manifest was null.");
+                    return;
+                }
+
+                Version current = new Version(App.CurrentVersion);
+                Version latest = new Version(manifest.version);
+
+                if (latest > current)
+                {
+                    Console.WriteLine("[UPDATE] Update available!");
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        var win = new UpdaterWindow(
+                        manifest.download_url,
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        manifest.version
+                    );
+
+                        win.Owner = this;
+                        win.ShowDialog();
+                    });
+                }
+                else
+                {
+                    Console.WriteLine("[UPDATE] Already up to date.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[UPDATE] Failed to check updates: " + ex.Message);
+            }
+        }
         public async void ShowSinglePaneText(string text)
         {
-            // fade out old panel
-            await FadeOut(SinglePaneGrid);
-            await FadeOut(DualPaneGrid);
+            // Fade out whichever panel is showing
+            if (SinglePaneGrid.Visibility == Visibility.Visible)
+                await FadeOut(SinglePaneGrid);
+            if (DualPaneGrid.Visibility == Visibility.Visible)
+                await FadeOut(DualPaneGrid);
 
+            // Switch to the single-pane view
             SinglePaneGrid.Visibility = Visibility.Visible;
             DualPaneGrid.Visibility = Visibility.Collapsed;
 
-            // Split into lines off UI thread
-            _ = Task.Run(() =>
-            {
-                var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+            // Prepare text (off UI thread)
+            var lines = await Task.Run(() =>
+                text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            );
 
-                Dispatcher.Invoke(() =>
-                {
-                    JsonList.ItemsSource = lines;
-                    JsonList.ScrollIntoView(lines.FirstOrDefault());
-                }, System.Windows.Threading.DispatcherPriority.Background);
-            });
+            // Apply new JSON lines
+            JsonList.ItemsSource = lines;
+            if (lines.Length > 0)
+                JsonList.ScrollIntoView(lines[0]);
 
-            // fade in refreshed content
+            // Fade new content in
             await FadeIn(SinglePaneGrid);
         }
         private void JsonList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
