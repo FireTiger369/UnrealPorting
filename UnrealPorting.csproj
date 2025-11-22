@@ -1,81 +1,94 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ApplicationIcon>Resources\UnrealPortingIcon.ico</ApplicationIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
 
-  <ItemGroup>
-    <None Remove="Icons\asset_icon.png" />
-  </ItemGroup>
+		<!-- Unified publish output -->
+		<PublishDir>..\PublishOutput\</PublishDir>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>false</SelfContained>
 
-  <ItemGroup>
-    <Content Include="Resources\UnrealPortingIcon.ico" />
-  </ItemGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Resources\UnrealPortingIcon.ico</ApplicationIcon>
+		
+		<!--Change Versions Here!!!-->
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
-    <PackageReference Include="Blake3" Version="2.0.0" />
-    <PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0" />
-    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
-    <PackageReference Include="CUE4Parse" Version="1.2.2" />
-    <PackageReference Include="CUE4Parse-Conversion" Version="1.2.1" />
-    <PackageReference Include="Infrablack.UE4Config" Version="0.7.2.97" />
-    <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
-    <PackageReference Include="SkiaSharp" Version="3.119.1" />
-    <PackageReference Include="ZstdSharp.Port" Version="0.8.4" />
-    <Resource Include="Icons\asset_icon.png" />
-	<Resource Include="Icons\folder_closed.png" />
-	<Resource Include="Icons\folder_open.png" />
-  </ItemGroup>
+	<!-- Resources -->
+	<ItemGroup>
+		<None Remove="Icons\asset_icon.png" />
+		<Content Include="Resources\UnrealPortingIcon.ico" />
+		<Resource Include="Icons\asset_icon.png" />
+		<Resource Include="Icons\folder_closed.png" />
+		<Resource Include="Icons\folder_open.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="BCnEncoder">
-      <HintPath>libs\BCnEncoder.dll</HintPath>
-    </Reference>
-    <Reference Include="CUE4Parse">
-      <HintPath>..\..\..\Downloads\CUE4Parse\CUE4Parse\bin\Release\net8.0\CUE4Parse.dll</HintPath>
-    </Reference>
-    <Reference Include="UAssetAPI">
-      <HintPath>..\..\..\Downloads\UAssetAPI-master\UAssetAPI-master\UAssetAPI\bin\Release\net8.0\UAssetAPI.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<!-- Dependencies -->
+	<ItemGroup>
+		<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+		<PackageReference Include="Blake3" Version="2.0.0" />
+		<PackageReference Include="BouncyCastle.Cryptography" Version="2.5.0" />
+		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+		<PackageReference Include="CUE4Parse" Version="1.2.2" />
+		<PackageReference Include="CUE4Parse-Conversion" Version="1.2.1" />
+		<PackageReference Include="Infrablack.UE4Config" Version="0.7.2.97" />
+		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+		<PackageReference Include="SkiaSharp" Version="3.119.1" />
+		<PackageReference Include="ZstdSharp.Port" Version="0.8.4" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<!-- External DLL references -->
+	<ItemGroup>
+		<Reference Include="BCnEncoder">
+			<HintPath>libs\BCnEncoder.dll</HintPath>
+		</Reference>
+		<Reference Include="CUE4Parse">
+			<HintPath>..\..\..\Downloads\CUE4Parse\CUE4Parse\bin\Release\net8.0\CUE4Parse.dll</HintPath>
+		</Reference>
+		<Reference Include="UAssetAPI">
+			<HintPath>..\..\..\Downloads\UAssetAPI-master\UAssetAPI-master\UAssetAPI\bin\Release\net8.0\UAssetAPI.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="Resources\oo2core_5_win64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Updates\update_manifest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<!-- Settings -->
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
 
-  <ItemGroup>
-    <Folder Include="Updates\" />
-  </ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
 
-  <ItemGroup>
-    <ProjectReference Include="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" />
-  </ItemGroup>
+		<None Update="Resources\oo2core_5_win64.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- Automatically publish updater -->
+	<ItemGroup>
+		<ProjectReference Include="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" />
+	</ItemGroup>
+
+	<Target Name="PublishUpdater" AfterTargets="Publish">
+		<MSBuild Projects="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" Targets="Publish" Properties="Configuration=Release" />
+	</Target>
+
+	<Target Name="CopyUpdater" AfterTargets="Build">
+		<Copy SourceFiles="..\PublishOutput\UnrealPorting.Updater.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>
 
 </Project>

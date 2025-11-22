@@ -354,6 +354,24 @@
                                        FontSize="11"
                                        TextWrapping="Wrap"
                                        Margin="0,2,0,0"/>
+                            <TextBlock x:Name="AppVersionLabel"
+                                       Text="Version"
+                                       FontSize="11"
+                                       Foreground="#5AA6FF"
+                                       Opacity="0.75"
+                                       HorizontalAlignment="Left"
+                                       Margin="2,40,0,0"/>
+                            <TextBlock Text="© 2024 UnrealPorting"
+                                       FontSize="11"
+                                       Foreground="#6B7280"
+                                       HorizontalAlignment="Left"
+                                       Margin="2,4,0,0"/>
+                            <TextBlock Text="All rights reserved."
+                                       FontSize="11"
+                                       Foreground="#6B7280"
+                                       HorizontalAlignment="Left"
+                                       Margin="2,0,0,0"/>
+                            
                         </StackPanel>
                     </Grid>
                 </Border>

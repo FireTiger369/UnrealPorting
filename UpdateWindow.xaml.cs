@@ -12,6 +12,7 @@ namespace UnrealPorting
 
         public UpdateWindow(UpdateManifest manifest)
         {
+
             InitializeComponent();
             _manifest = manifest;
 
@@ -26,30 +27,39 @@ namespace UnrealPorting
         private void Update_Click(object sender, RoutedEventArgs e)
         {
             string updaterExe = Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
+                Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName),
                 "UnrealPorting.Updater.exe"
             );
 
             if (!File.Exists(updaterExe))
             {
-                MessageBox.Show("Updater executable missing.");
+                MessageBox.Show("Updater executable missing:\n" + updaterExe);
                 return;
             }
 
-            // PASS ALL NEEDED ARGUMENTS
+            // Correct install directory (where main EXE actually lives)
+            string installDir = Path.GetDirectoryName(
+                Process.GetCurrentProcess().MainModule.FileName
+            );
+
             string downloadUrl = _manifest.download_url;
-            string installDir = AppDomain.CurrentDomain.BaseDirectory;
             string version = _manifest.version;
 
-            // Wrap them safely for command line
-            string args =
-                $"\"{downloadUrl}\" " +
-                $"\"{installDir}\" " +
-                $"\"{version}\"";
+            string args = $"\"{downloadUrl}\" \"{installDir}\" \"{version}\"";
 
-            Process.Start(updaterExe, args);
+            try
+            {
+                Process.Start(updaterExe, args);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Failed to start updater:\n" + ex.Message);
+                return;
+            }
 
+            // FULL shutdown required so updater can overwrite files
             Application.Current.Shutdown();
+            Environment.Exit(0);
         }
     }
 }

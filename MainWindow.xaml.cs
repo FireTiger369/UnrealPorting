@@ -44,8 +44,11 @@ namespace UnrealPorting
         public MainWindow()
         {
             Console.WriteLine("[DEBUG] MainWindow created — UI hooks active");
+            ReplaceUpdaterIfNeeded();
 
             InitializeComponent();
+            Console.WriteLine("Current version = " + App.CurrentVersion);
+            AppVersionLabel.Text = $"Version {App.CurrentVersion}";
             App.ProfileChanged += OnProfileChanged;
 
             Console.WriteLine("[INFO] MainWindow initialized — waiting for game directory selection.");
@@ -644,6 +647,36 @@ namespace UnrealPorting
         #endregion
 
         #region Helpers
+        private void ReplaceUpdaterIfNeeded()
+        {
+            try
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+                string newUpdater = Path.Combine(baseDir, "UnrealPorting.Updater.exe.new");
+                string currentUpdater = Path.Combine(baseDir, "UnrealPorting.Updater.exe");
+                string oldUpdater = currentUpdater + ".old";
+
+                // If a new updater exists (from last update)
+                if (File.Exists(newUpdater))
+                {
+                    // Delete old updater if exists
+                    if (File.Exists(currentUpdater))
+                        File.Delete(currentUpdater);
+
+                    // Move new updater into place
+                    File.Move(newUpdater, currentUpdater);
+
+                    // Cleanup .old if exists
+                    if (File.Exists(oldUpdater))
+                        File.Delete(oldUpdater);
+                }
+            }
+            catch
+            {
+                // Silent — worst case updater stays old version
+            }
+        }
 
         public void ShowSpinner()
         {
@@ -919,7 +952,7 @@ namespace UnrealPorting
         private async Task CheckForUpdatesAsync()
         {
             const string MANIFEST_URL =
-                "https://raw.githubusercontent.com/FireTiger369/UnrealPorting/main/updates/update_manifest.json";
+                "https://raw.githubusercontent.com/FireTiger369/UnrealPorting/master/Updates/update_manifest.json";
 
             try
             {
@@ -942,12 +975,7 @@ namespace UnrealPorting
 
                     Dispatcher.Invoke(() =>
                     {
-                        var win = new UpdaterWindow(
-                        manifest.download_url,
-                        AppDomain.CurrentDomain.BaseDirectory,
-                        manifest.version
-                    );
-
+                        var win = new UpdateWindow(manifest);
                         win.Owner = this;
                         win.ShowDialog();
                     });
