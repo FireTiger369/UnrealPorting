@@ -1,0 +1,33 @@
+﻿<Window x:Class="UnrealPorting.SearchWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Search Assets"
+        Width="600"
+        Height="500"
+        Background="#1E1E1E"
+        Foreground="White">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search bar -->
+        <TextBox x:Name="SearchBox"
+                 Height="28"
+                 Background="#222"
+                 Foreground="White"
+                 BorderBrush="RoyalBlue"
+                 Padding="6"
+                 TextChanged="SearchBox_TextChanged"/>
+
+        <!-- Results -->
+        <ListBox x:Name="ResultsList"
+                 Grid.Row="1"
+                 Background="#1E1E1E"
+                 Foreground="White"
+                 BorderBrush="#333"
+                 MouseDoubleClick="ResultsList_MouseDoubleClick"/>
+    </Grid>
+</Window>

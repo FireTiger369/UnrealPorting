@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+
+		<!-- Unified publish output -->
+		<PublishDir>..\PublishOutput\</PublishDir>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>false</SelfContained>
+
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Resources\UnrealPortingIcon.ico</ApplicationIcon>
+		
+		<!--Change Versions Here!!!-->
+		<AssemblyVersion>1.0.1.0</AssemblyVersion>
+		<FileVersion>1.0.1.0</FileVersion>
+		<Version>1.0.1</Version>
+	</PropertyGroup>
+
+	<!-- Resources -->
+	<ItemGroup>
+		<None Remove="Icons\asset_icon.png" />
+		<Content Include="Resources\UnrealPortingIcon.ico" />
+		<Resource Include="Icons\asset_icon.png" />
+		<Resource Include="Icons\folder_closed.png" />
+		<Resource Include="Icons\folder_open.png" />
+	</ItemGroup>
+
+	<!-- Dependencies -->
+	<ItemGroup>
+		<PackageReference Include="AvalonEdit" Version="6.3.1.120" />
+		<PackageReference Include="Blake3" Version="2.0.0" />
+		<PackageReference Include="BouncyCastle.Cryptography" Version="2.6.2" />
+		<PackageReference Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
+		<PackageReference Include="Infrablack.UE4Config" Version="0.7.2.97" />
+		<PackageReference Include="K4os.Compression.LZ4" Version="1.3.8" />
+		<PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Serilog" Version="4.3.0" />
+		<PackageReference Include="SharpGLTF.Core" Version="1.0.5" />
+		<PackageReference Include="SharpGLTF.Toolkit" Version="1.0.5" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+		<PackageReference Include="SkiaSharp" Version="3.119.1" />
+		<PackageReference Include="ZstdSharp.Port" Version="0.8.6" />
+	</ItemGroup>
+
+	<!-- External DLL references -->
+	<ItemGroup>
+		<Reference Include="BCnEncoder">
+			<HintPath>libs\BCnEncoder.dll</HintPath>
+		</Reference>
+		<Reference Include="CUE4Parse">
+			<HintPath>..\..\..\Downloads\CUE4Parse\CUE4Parse\bin\Release\net8.0\CUE4Parse.dll</HintPath>
+		</Reference>
+		<Reference Include="UAssetAPI">
+			<HintPath>..\..\..\Downloads\UAssetAPI-master\UAssetAPI-master\UAssetAPI\bin\Release\net8.0\UAssetAPI.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<!-- Settings -->
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+
+		<None Update="Resources\oo2core_5_win64.dll">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+
+		<None Update="Resources\oo2core_7_win64.dll">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+
+		<None Update="Resources\oo2core_8_win64.dll">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+
+		<None Update="Resources\oo2core_9_win64.dll">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<!-- Automatically publish updater -->
+	<ItemGroup>
+		<ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
+		<ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
+		<ProjectReference Include="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" />
+		<ProjectReference Include="libs\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="CUE4Parse\" />
+	</ItemGroup>
+
+	<Target Name="PublishUpdater" AfterTargets="Publish">
+		<MSBuild Projects="..\UnrealPorting.Updater\UnrealPorting.Updater.csproj" Targets="Publish" Properties="Configuration=Release" />
+	</Target>
+
+	<Target Name="CopyUpdater" AfterTargets="Build">
+		<Copy SourceFiles="..\PublishOutput\UnrealPorting.Updater.exe" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+	</Target>
+
+</Project>
