@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
-  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.1/UnrealPortingReleaseV1.0.1.zip",
-  "changelog": "Fixed an issue where the app would run as a console app instead of a windows app."
+  "version": "1.0.2",
+  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.2/UnrealPortingReleaseV1.0.2.zip",
+  "changelog": "Redid the whole folder structure and added more versions to prevent newer versions from being read."
 }
