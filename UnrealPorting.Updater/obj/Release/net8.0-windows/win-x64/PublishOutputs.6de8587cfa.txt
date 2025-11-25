@@ -1,0 +1,2 @@
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.Updater.pdb
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.Updater.exe

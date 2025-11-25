@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+
+		<!-- Use Program.cs as entry -->
+		<StartupObject>UnrealPorting.Updater.Program</StartupObject>
+
+		<!-- FORCE publish output -->
+		<PublishDir>..\PublishOutput\</PublishDir>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<SelfContained>false</SelfContained>
+
+		<!-- Disable default includes to avoid duplicates -->
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Page Include="App.xaml" />
+		<Page Include="UpdaterWindow.xaml" />
+		<Page Include="Resources\SpinnerResource.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="App.xaml.cs">
+			<DependentUpon>App.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Include="UpdaterWindow.xaml.cs">
+			<DependentUpon>UpdaterWindow.xaml</DependentUpon>
+		</Compile>
+
+		<Compile Include="Program.cs" />
+		<Compile Include="UpdateManifest.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Properties\PublishProfiles\" />
+	</ItemGroup>
+
+</Project>

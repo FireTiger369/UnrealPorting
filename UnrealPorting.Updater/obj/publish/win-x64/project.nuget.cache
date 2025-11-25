@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/nK0E3sXNNo=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting.Updater\\UnrealPorting.Updater.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thero\\.nuget\\packages\\microsoft.net.illink.tasks\\8.0.21\\microsoft.net.illink.tasks.8.0.21.nupkg.sha512"
+  ],
+  "logs": []
+}
