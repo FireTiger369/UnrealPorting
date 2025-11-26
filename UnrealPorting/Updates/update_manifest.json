@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
-  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.0/UnrealPorting.zip",
-  "changelog": "Inital Release."
+  "version": "1.0.3",
+  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.3/UnrealPortingReleaseV1.0.3.zip",
+  "changelog": "Updated UI to match better as well as added new toast messages, logs window, and texture mip exporting."
 }
