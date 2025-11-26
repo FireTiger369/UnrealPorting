@@ -8,76 +8,109 @@
 
     <Window.Resources>
 
+        <!-- ==========================
+             STYLES
+        =========================== -->
+
         <!-- CARD PANEL -->
         <Style x:Key="Card" TargetType="Border">
-            <Setter Property="Background" Value="#18181B"/>
-            <Setter Property="CornerRadius" Value="10"/>
-            <Setter Property="BorderBrush" Value="#2A2A2D"/>
+            <Setter Property="Background" Value="#14141A"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderBrush" Value="#26262C"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="14"/>
             <Setter Property="Margin" Value="0 0 0 14"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#5AA6FF"
+                                      BlurRadius="18"
+                                      ShadowDepth="0"
+                                      Opacity="0.35"/>
+                </Setter.Value>
+            </Setter>
         </Style>
 
-        <!-- LABEL STYLE -->
+        <!-- LABEL -->
         <Style x:Key="SettingLabel" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#E5E7EB"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="0 6 0 2"/>
+            <Setter Property="Margin" Value="0 0 0 4"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
         </Style>
 
-        <!-- COMBOBOX DARK -->
-        <Style TargetType="ComboBox" BasedOn="{x:Null}">
+        <!-- TEXTBOX -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="#1F1F23"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#2A2A2D"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6 4"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- COMBOBOX -->
+        <Style TargetType="ComboBox">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#1F1F23"/>
-            <Setter Property="BorderBrush" Value="#444"/>
+            <Setter Property="BorderBrush" Value="#2A2A2D"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ComboBox">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition Width="25"/>
+                                <ColumnDefinition Width="32"/>
                             </Grid.ColumnDefinitions>
 
                             <!-- Main box -->
                             <Border Background="#1F1F23"
-                                    BorderBrush="#444"
+                                    BorderBrush="#2A2A2D"
                                     BorderThickness="1"
-                                    CornerRadius="4"
+                                    CornerRadius="6"
                                     Grid.ColumnSpan="2">
                                 <ContentPresenter Margin="6,3,0,3"
                                                   VerticalAlignment="Center"
-                                                  Content="{TemplateBinding SelectionBoxItem}" />
+                                                  Content="{TemplateBinding SelectionBoxItem}"/>
                             </Border>
 
                             <!-- Dropdown button -->
-                            <ToggleButton x:Name="Btn"
+                            <ToggleButton x:Name="Drop"
                                           Grid.Column="1"
                                           Background="#1F1F23"
-                                          BorderBrush="#444"
+                                          BorderBrush="#2A2A2D"
                                           BorderThickness="1"
                                           IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}">
-
-                                <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                                <Path Data="M 0 0 L 6 6 L 12 0 Z"
                                       Fill="White"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center"/>
                             </ToggleButton>
 
-                            <!-- Dropdown popup -->
+                            <!-- Dropdown Items -->
                             <Popup x:Name="Popup"
                                    Placement="Bottom"
-                                   PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                   AllowsTransparency="True"
                                    IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   PopupAnimation="Slide">
-                                <Border Background="#1E1E1E"
-                                        BorderBrush="#444"
+                                   AllowsTransparency="True">
+                                <Border Background="#14141A"
+                                        BorderBrush="#2A2A2D"
                                         BorderThickness="1"
-                                        CornerRadius="4"
+                                        CornerRadius="6"
                                         Padding="4"
                                         Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ComboBox}}">
                                     <ScrollViewer>
@@ -92,47 +125,19 @@
         </Style>
 
         <!-- COMBOBOX ITEMS -->
-        <Style TargetType="ComboBoxItem" BasedOn="{x:Null}">
+        <Style TargetType="ComboBoxItem">
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="Background" Value="#1F1F23"/>
             <Setter Property="Padding" Value="4"/>
+            <Setter Property="Cursor" Value="Hand"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#2D2D33"/>
+                    <Setter Property="Background" Value="#2C3A56"/>
+                    <Setter Property="BorderBrush" Value="#5AA6FF"/>
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#3A3A40"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- BUTTON -->
-        <Style TargetType="Button" BasedOn="{x:Null}">
-            <Setter Property="Background" Value="#1F2937"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="#5AA6FF"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8 4"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#233043"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="Background" Value="#182433"/>
+                    <Setter Property="Background" Value="#14254E"/>
+                    <Setter Property="BorderBrush" Value="#5AA6FF"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -142,8 +147,8 @@
 
 
     <!-- ===========================
-         MAIN UI LAYOUT
-    ================================ -->
+         MAIN WINDOW LAYOUT
+    =============================== -->
     <Grid Margin="20">
 
         <Grid.RowDefinitions>
@@ -160,17 +165,14 @@
                    Margin="0 0 0 16"/>
 
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN SETTINGS -->
         <StackPanel Grid.Row="1">
 
             <!-- GENERAL ENGINE SETTINGS -->
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="General Engine Version"
-                               Style="{StaticResource SettingLabel}" />
-
-                    <ComboBox x:Name="EngineVersionCombo"
-                              Width="160">
+                    <TextBlock Text="General Engine Version" Style="{StaticResource SettingLabel}" />
+                    <ComboBox x:Name="EngineVersionCombo" Width="160">
                         <ComboBoxItem Content="UE4.16"/>
                         <ComboBoxItem Content="UE4.19"/>
                         <ComboBoxItem Content="UE4.20"/>
@@ -197,11 +199,8 @@
             <!-- PROFILE ENGINE VERSION -->
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="Profile's Engine Version"
-                               Style="{StaticResource SettingLabel}" />
-
-                    <ComboBox x:Name="EngineComboBox"
-                              Width="160">
+                    <TextBlock Text="Profile's Engine Version" Style="{StaticResource SettingLabel}" />
+                    <ComboBox x:Name="EngineComboBox" Width="160">
                         <ComboBoxItem Content="UE4.16"/>
                         <ComboBoxItem Content="UE4.19"/>
                         <ComboBoxItem Content="UE4.20"/>
@@ -230,17 +229,24 @@
                 <StackPanel>
                     <CheckBox x:Name="UseCustomMappingsBox"
                               Content="Enable custom .usmap file"
-                              Foreground="White"/>
+                              Foreground="White"
+                              Margin="0 0 0 8"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0 8 0 0">
+                    <StackPanel Orientation="Horizontal">
                         <TextBox x:Name="MappingsPathBox"
-                                 Width="260"
-                                 Background="#1F1F23"
-                                 Foreground="White"/>
+                                 Width="260"/>
                         <Button Content="Browse"
-                                Width="80"
-                                Margin="8 0 0 0"
-                                Click="SelectMappings_Click"/>
+                                Width="90"
+                                Height="32"
+                                Margin="9, 0, 10, 0"
+                                FontWeight="SemiBold"
+                                Foreground="White"
+                                Background="#20212A"
+                                BorderBrush="#2A2A2D"
+                                BorderThickness="1"
+                                Cursor="Hand"
+                                Click="SelectMappings_Click">
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -249,20 +255,24 @@
 
 
         <!-- SAVE BUTTON -->
-        <StackPanel Background="Transparent" Orientation="Vertical" Grid.Row="2">
-            <Button Grid.Row="2"
+        <Button Grid.Row="2"
                 Content="Save Settings"
-                FontWeight="Bold"
-                Height="42"
-                Margin="0 14 0 0"
+                Height="44"
+                Margin="0 10 0 0"
+                FontWeight="SemiBold"
                 Foreground="White"
-                Background="#FF14254E"
-                BorderBrush="RoyalBlue"
-                Click="BtnSave_Click"/>
-            <StackPanel.Effect>
-                <DropShadowEffect Color="RoyalBlue" BlurRadius="50" ShadowDepth="0" Opacity="0.6"/>
-            </StackPanel.Effect>
-        </StackPanel>
+                Background="#5AA6FF"
+                BorderBrush="#5AA6FF"
+                BorderThickness="1"
+                Cursor="Hand"
+                Click="BtnSave_Click">
+            <Button.Effect>
+                <DropShadowEffect Color="#5AA6FF"
+                                  BlurRadius="20"
+                                  ShadowDepth="0"
+                                  Opacity="0.6"/>
+            </Button.Effect>
+        </Button>
     </Grid>
 
 </Window>

@@ -1,5 +1,6 @@
 ﻿using CUE4Parse.Compression;
 using CUE4Parse.MappingsProvider;
+using CUE4Parse.UE4.Assets.Exports.Texture;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Newtonsoft.Json;
 using SkiaSharp;
@@ -14,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using UnrealPorting.Helpers;
 using UnrealPorting.Properties;
@@ -41,13 +43,16 @@ namespace UnrealPorting
         private CancellationTokenSource? _loadCts;
         private const int MAX_FILES_PER_FOLDER = 3000;
         private string _oodleDllPath = "";
+        private LogsWindow _logsWindow;
+        private readonly List<string> _logHistory = new();
         public MainWindow()
         {
             Console.WriteLine("[DEBUG] MainWindow created — UI hooks active");
             ReplaceUpdaterIfNeeded();
 
             InitializeComponent();
-            Console.WriteLine("Current version = " + App.CurrentVersion);
+            AddLog("Current version = " + App.CurrentVersion);
+            ToastManager.ShowToast(this, "Current version: " + App.CurrentVersion, ToastType.Info);
             AppVersionLabel.Text = $"Version {App.CurrentVersion}";
             App.ProfileChanged += OnProfileChanged;
 
@@ -135,9 +140,9 @@ namespace UnrealPorting
                     .ToDictionary(kv => kv.Key.ToString(), kv => kv.Value);
 
                 GameProfileStore.Save();
-                MessageBox.Show("AES keys saved to this profile.", "AES Saved");
 
-                Console.WriteLine($"[PROFILE] Saved AES keys for profile '{profile.Name}'");
+                AddLog($"[PROFILE] Saved AES keys for profile '{profile.Name}'");
+                ToastManager.ShowToast(this, "AES keys saved to profile.", ToastType.Info);
 
             }
         }
@@ -387,20 +392,28 @@ namespace UnrealPorting
 
         private void OnProfileChanged(GameProfile? profile)
         {
-            Console.WriteLine(profile != null
+            AddLog(profile != null
                 ? $"[PROFILE] Switched to: {profile.Name}"
                 : "[PROFILE] Cleared");
+            ToastManager.ShowToast(this,
+                profile != null
+                    ? $"Switched to profile: {profile.Name}"
+                    : "Cleared profile.",
+                ToastType.Info);
 
-            // 1) Clear in-memory AES caches
+            // 1) Clear in-memory AES caches (ONLY OUR LOCAL ONE!)
             _aesKeysDictionary.Clear();
 
+            // 2) Dispose only the AppPakReader instance
             _pakReader?.Dispose();
             _pakReader = null;
 
             // 3) Clear file lists + folder tree
             _globalFilePaths.Clear();
             _folderTrie = null;
-            _oodleInitialized = false;
+
+            // Do NOT touch Oodle state – leave it alive
+            // _oodleInitialized = false;
 
             // 4) Clear UI panels
             ArchivesTreeView.Items.Clear();
@@ -410,6 +423,7 @@ namespace UnrealPorting
 
             Console.WriteLine("[PROFILE] Reset AES, PakReader, UI state.");
         }
+
 
 
 
@@ -534,6 +548,23 @@ namespace UnrealPorting
             // Keep window open
             win.Show();
         }
+        private void OpenLogsWindow_Click(object sender, RoutedEventArgs e)
+        {
+            if (_logsWindow == null || !_logsWindow.IsVisible)
+            {
+                _logsWindow = new LogsWindow();
+                _logsWindow.Show();
+
+                // Load full history into the window
+                foreach (var msg in _logHistory)
+                    _logsWindow.AddLog(msg);
+            }
+            else
+            {
+                _logsWindow.Show();
+                _logsWindow.Focus();
+            }
+        }
 
         private async void BtnLoadArchives_Click(object sender, RoutedEventArgs e)
         {
@@ -606,7 +637,7 @@ namespace UnrealPorting
                 {
                     BuildFolderTreeUI();
                     LoadArchivesListUI();
-                    MessageBox.Show("Archives mounted and loaded.");
+                    ToastManager.ShowToast(this, "Archives mounted and loaded.", ToastType.Success);
                 });
             });
 
@@ -616,6 +647,7 @@ namespace UnrealPorting
         #endregion
 
         #region Helpers
+
         private void ReplaceUpdaterIfNeeded()
         {
             try
@@ -645,6 +677,18 @@ namespace UnrealPorting
             {
                 // Silent — worst case updater stays old version
             }
+        }
+        public void AddLog(string text)
+        {
+            Console.WriteLine(text);
+
+            string line = $"[{DateTime.Now:HH:mm:ss}] {text}";
+
+            // Store permanently in buffer
+            _logHistory.Add(line);
+
+            // If logs window is open, update it live
+            _logsWindow?.AddLog(line);
         }
 
         public void ShowSpinner()
@@ -825,7 +869,7 @@ namespace UnrealPorting
                 return;
             }
 
-            Console.WriteLine($"[WARN] No file matched: {normalized}");
+            AddLog($"[WARN] No file matched: {normalized}");
         }
 
 
@@ -890,7 +934,7 @@ namespace UnrealPorting
         private async Task CheckForUpdatesAsync()
         {
             const string MANIFEST_URL =
-                "https://raw.githubusercontent.com/FireTiger369/UnrealPorting/master/Updates/update_manifest.json";
+                "https://raw.githubusercontent.com/FireTiger369/UnrealPorting/main/UnrealPorting/Updates/update_manifest.json";
 
             try
             {
@@ -900,7 +944,8 @@ namespace UnrealPorting
                 var manifest = JsonConvert.DeserializeObject<UpdateManifest>(json);
                 if (manifest == null)
                 {
-                    Console.WriteLine("[UPDATE] Manifest was null.");
+                    AddLog("[UPDATE] Manifest was null.");
+                    ToastManager.ShowToast(this, "Update check failed (null manifest).", ToastType.Error);
                     return;
                 }
 
@@ -909,7 +954,8 @@ namespace UnrealPorting
 
                 if (latest > current)
                 {
-                    Console.WriteLine("[UPDATE] Update available!");
+                    AddLog("[UPDATE] Update available!");
+                    ToastManager.ShowToast(this, "A new update is available!", ToastType.Warning);
 
                     Dispatcher.Invoke(() =>
                     {
@@ -920,12 +966,14 @@ namespace UnrealPorting
                 }
                 else
                 {
-                    Console.WriteLine("[UPDATE] Already up to date.");
+                    AddLog("[UPDATE] Already up to date.");
+                    ToastManager.ShowToast(this, "You are using the latest version.", ToastType.Info);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("[UPDATE] Failed to check updates: " + ex.Message);
+                AddLog("[UPDATE] Failed to check updates: " + ex.Message);
+                ToastManager.ShowToast(this, "Update check failed.", ToastType.Error);
             }
         }
         public async void ShowSinglePaneText(string text)
@@ -1075,6 +1123,35 @@ namespace UnrealPorting
                 return;
 
             PreviewManager.ExportJsonFromAsset(assetPath, this, _pakReader);
+        }
+        private void ExportMip_Click(object sender, RoutedEventArgs e)
+        {
+            if (GamePackagesTreeView.SelectedItem is not TreeViewItem item)
+                return;
+
+            string assetPath = item.Tag as string;
+            if (string.IsNullOrWhiteSpace(assetPath))
+                return;
+
+            if (_pakReader == null)
+                return;
+
+            if (!_pakReader.Provider.TryGetGameFile(assetPath, out var file))
+                return;
+
+            var package = _pakReader.Provider.LoadPackage(file);
+            package.DeserializeAllExports();
+
+            var export = package.GetExport(0);
+
+            if (export is UTexture2D tex)
+            {
+                PreviewManager.ExportSingleTextureMip(tex, this);
+            }
+            else
+            {
+                MessageBox.Show("This option is only for single textures (UTexture2D).");
+            }
         }
 
 

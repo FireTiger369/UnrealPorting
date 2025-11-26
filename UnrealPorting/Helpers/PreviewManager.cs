@@ -5,6 +5,9 @@ using CUE4Parse.UE4.Assets.Exports.Material;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.Core.i18N;
+using CUE4Parse.UE4.Objects.Core.Misc;
+using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse_Conversion.Textures;
 using Newtonsoft.Json;
 using SevenZip.Compression.LZ;
@@ -308,6 +311,86 @@ namespace UnrealPorting.Helpers
             return sb.ToString();
         }
 
+        // ------------------------------------------------------------ //
+        //                  TEXTURE MIP EXPORTER                        //
+        // ------------------------------------------------------------ //
+        public static void ExportSingleTextureMip(UTexture2D tex, MainWindow window)
+        {
+            try
+            {
+                var pd = tex.PlatformData;
+                if (pd == null || pd.Mips == null || pd.Mips.Length == 0)
+                {
+                    ToastManager.ShowToast(window, "Texture has no mip data.", ToastType.Error);
+                    return;
+                }
+
+                // Build a simple list of mip options for the user
+                // Build list of mip sizes for the picker window
+                var mipSizes = pd.Mips
+                    .Select(m => (m.SizeX, m.SizeY))
+                    .ToArray();
+
+                // Show the mip selection window
+                var picker = new MipSelectWindow(mipSizes)
+                {
+                    Owner = window
+                };
+
+                bool? result = picker.ShowDialog();
+                if (result != true || picker.SelectedMip < 0)
+                {
+                    ToastManager.ShowToast(window,"Mip export cancelled.", ToastType.Info);
+                    return;
+                }
+
+                int mipIndex = picker.SelectedMip;
+                var mip = pd.Mips[mipIndex];
+
+                // Decode the FULL texture once
+                CTexture fullTex = tex.Decode();
+                SKBitmap fullBmp = ConvertToSkBitmap(fullTex);
+
+                // Target size = mip size (clamped to something sane)
+                int targetW = Math.Max(1, Math.Min(fullBmp.Width, mip.SizeX));
+                int targetH = Math.Max(1, Math.Min(fullBmp.Height, mip.SizeY));
+
+                // Resize down to that mip resolution
+                var resized = fullBmp.Resize(
+                    new SKImageInfo(targetW, targetH),
+                    SKFilterQuality.High
+                );
+
+                if (resized == null)
+                {
+                    ToastManager.ShowToast(window, "Failed to resize bitmap for mip export.", ToastType.Error);
+                    return;
+                }
+
+                // Ask where to save
+                var dlg = new Microsoft.Win32.SaveFileDialog
+                {
+                    FileName = $"{tex.Name}_Mip{mipIndex}_{targetW}x{targetH}.png",
+                    Filter = "PNG Image|*.png"
+                };
+
+                if (dlg.ShowDialog() != true)
+                    return;
+
+                using var image = resized.Encode(SKEncodedImageFormat.Png, 100);
+                File.WriteAllBytes(dlg.FileName, image.ToArray());
+
+                ToastManager.ShowToast(
+                    window, $"Exported {tex.Name} Mip {mipIndex} ({targetW}x{targetH})", ToastType.Success
+                );
+            }
+            catch (Exception ex)
+            {
+                ToastManager.ShowToast(window, $"Export mip failed:\n{ex}", ToastType.Error);
+            }
+        }
+
+
         // ------------------------------------------------------------
         // UI HELPERS
         // ------------------------------------------------------------
@@ -352,14 +435,14 @@ namespace UnrealPorting.Helpers
             {
                 if (!reader.Provider.TryGetGameFile(assetPath, out var gameFile))
                 {
-                    window.ShowSinglePaneText($"[ERROR] Could not load file: {assetPath}");
+                    ToastManager.ShowToast(window, $"Could not load file: {assetPath}", ToastType.Error);
                     return;
                 }
 
                 IPackage? package = reader.Provider.LoadPackage(gameFile);
                 if (package == null)
                 {
-                    window.ShowSinglePaneText("[ERROR] Failed to load package.");
+                    ToastManager.ShowToast(window, "Failed to load package.", ToastType.Error);
                     return;
                 }
 
@@ -367,7 +450,7 @@ namespace UnrealPorting.Helpers
                 var export = package.GetExport(0);
                 if (export == null)
                 {
-                    window.ShowSinglePaneText("[ERROR] Export was null.");
+                    ToastManager.ShowToast(window, "Export was null.", ToastType.Error);
                     return;
                 }
 
@@ -389,11 +472,15 @@ namespace UnrealPorting.Helpers
                 File.WriteAllText(outputPath, json);
 
                 // Show JSON after export
+                // Notify user
+                ToastManager.ShowToast(window, "JSON exported successfully.", ToastType.Success);
+
+                // And still show the JSON in the preview panel
                 window.ShowSinglePaneText(json);
             }
             catch (Exception ex)
             {
-                window.ShowSinglePaneText($"Export JSON failed:\n{ex}");
+                ToastManager.ShowToast(window, $"Export JSON failed:\n{ex}", ToastType.Error);
             }
         }
         public static void ExportTexturesFromAsset(string assetPath, MainWindow window, AppPakReader reader)
@@ -402,7 +489,7 @@ namespace UnrealPorting.Helpers
             {
                 if (!reader.Provider.TryGetGameFile(assetPath, out var gameFile))
                 {
-                    window.ShowSinglePaneText($"[ERROR] Could not load file: {assetPath}");
+                    ToastManager.ShowToast(window, $"Could not load file: {assetPath}", ToastType.Error);
                     return;
                 }
 
@@ -425,7 +512,7 @@ namespace UnrealPorting.Helpers
                 if (export is UTexture2D tex)
                 {
                     ExportSingleTexture(tex, outDir);
-                    window.ShowSinglePaneText($"Exported texture:\n{tex.Name}.png");
+                    ToastManager.ShowToast(window, $"Exported texture:\n{tex.Name}.png", ToastType.Success);
                     return;
                 }
 
@@ -437,15 +524,15 @@ namespace UnrealPorting.Helpers
                     foreach (var t in textures)
                         ExportSingleTexture(t, outDir);
 
-                    window.ShowSinglePaneText($"Exported {textures.Count} textures from material:\n{mat.Name}");
+                    ToastManager.ShowToast(window, $"Exported {textures.Count} textures from material:\n{mat.Name}", ToastType.Success);
                     return;
                 }
 
-                window.ShowSinglePaneText("[INFO] No textures found in this asset.");
+                ToastManager.ShowToast(window, "No textures found in this asset.", ToastType.Info);
             }
             catch (Exception ex)
             {
-                window.ShowSinglePaneText($"Export textures failed:\n{ex}");
+                ToastManager.ShowToast(window, $"Export textures failed:\n{ex}", ToastType.Error);
             }
         }
 
@@ -597,7 +684,7 @@ namespace UnrealPorting.Helpers
             {
                 if (!reader.Provider.TryGetGameFile(assetPath, out var gameFile))
                 {
-                    window.ShowSinglePaneText($"[ERROR] Cannot load file: {assetPath}");
+                    ToastManager.ShowToast(window, $"Cannot load file: {assetPath}", ToastType.Error);
                     return;
                 }
 
@@ -607,7 +694,7 @@ namespace UnrealPorting.Helpers
                 var export = pkg.GetExport(0);
                 if (export == null)
                 {
-                    window.ShowSinglePaneText("[ERROR] Export is null.");
+                    ToastManager.ShowToast(window, "Export is null.", ToastType.Error);
                     return;
                 }
 
@@ -627,19 +714,19 @@ namespace UnrealPorting.Helpers
 
                 if (textures.Count == 0)
                 {
-                    window.ShowSinglePaneText("[INFO] No referenced textures found.");
+                    ToastManager.ShowToast(window, "No referenced textures found.", ToastType.Info);
                     return;
                 }
 
                 foreach (var tex in textures)
                     ExportTexturePNG(tex, outDir);
 
-                window.ShowSinglePaneText(
-                    $"Export complete.\n{textures.Count} textures exported from:\n{export.Name}");
+                ToastManager.ShowToast(
+                    window, $"Export complete.\n{textures.Count} textures exported from:\n{export.Name}", ToastType.Success);
             }
             catch (Exception ex)
             {
-                window.ShowSinglePaneText($"Export failed:\n{ex}");
+                ToastManager.ShowToast(window, $"Export failed:\n{ex}", ToastType.Error);
             }
         }
 

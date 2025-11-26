@@ -1,0 +1,10 @@
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.pdb
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.Updater.exe
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\Resources\oo2core_5_win64.dll
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.Updater.runtimeconfig.json
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.dll.config
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\CUE4Parse-Natives.dll
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\blake3_dotnet.dll
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\libSkiaSharp.dll
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.Updater.pdb
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Release\net8.0-windows\publish\win-x64\UnrealPorting.exe

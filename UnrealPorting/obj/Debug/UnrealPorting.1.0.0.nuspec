@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>UnrealPorting</id>
+    <version>1.0.0</version>
+    <authors>UnrealPorting</authors>
+    <description>Package Description</description>
+    <repository type="git" commit="623604074e04a8524cc3fe470a846a26d25ddd6a" />
+    <dependencies>
+      <group targetFramework="net8.0-windows7.0">
+        <dependency id="UnrealPorting.Updater" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="AvalonEdit" version="6.3.1.120" exclude="Build,Analyzers" />
+        <dependency id="Blake3" version="2.0.0" exclude="Build,Analyzers" />
+        <dependency id="BouncyCastle.Cryptography" version="2.5.0" exclude="Build,Analyzers" />
+        <dependency id="CUE4Parse" version="1.2.2" exclude="Build,Analyzers" />
+        <dependency id="CUE4Parse-Conversion" version="1.2.1" exclude="Build,Analyzers" />
+        <dependency id="CommunityToolkit.HighPerformance" version="8.4.0" exclude="Build,Analyzers" />
+        <dependency id="Infrablack.UE4Config" version="0.7.2.97" exclude="Build,Analyzers" />
+        <dependency id="Microsoft-WindowsAPICodePack-Shell" version="1.1.5" exclude="Build,Analyzers" />
+        <dependency id="Newtonsoft.Json" version="13.0.4" exclude="Build,Analyzers" />
+        <dependency id="Serilog" version="4.3.0" exclude="Build,Analyzers" />
+        <dependency id="SixLabors.ImageSharp" version="3.1.12" exclude="Build,Analyzers" />
+        <dependency id="SkiaSharp" version="3.119.1" exclude="Build,Analyzers" />
+        <dependency id="ZstdSharp.Port" version="0.8.4" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+    <frameworkReferences>
+      <group targetFramework="net8.0-windows7.0">
+        <frameworkReference name="Microsoft.WindowsDesktop.App.WPF" />
+      </group>
+    </frameworkReferences>
+    <contentFiles>
+      <files include="any/net8.0-windows7.0/Resources/UnrealPortingIcon.ico" buildAction="Content" />
+    </contentFiles>
+  </metadata>
+  <files>
+    <file src="C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Debug\net8.0-windows\UnrealPorting.runtimeconfig.json" target="lib\net8.0-windows7.0\UnrealPorting.runtimeconfig.json" />
+    <file src="C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\bin\Debug\net8.0-windows\UnrealPorting.dll" target="lib\net8.0-windows7.0\UnrealPorting.dll" />
+    <file src="C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\Resources\UnrealPortingIcon.ico" target="content\Resources\UnrealPortingIcon.ico" />
+    <file src="C:\Users\thero\Desktop\UnrealPorting\UnrealPorting\Resources\UnrealPortingIcon.ico" target="contentFiles\any\net8.0-windows7.0\Resources\UnrealPortingIcon.ico" />
+  </files>
+</package>

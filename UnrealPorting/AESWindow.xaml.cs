@@ -35,7 +35,6 @@ namespace UnrealPorting
                 return;
             }
 
-            // ✅ Filter only relevant utocs
             var allUtocs = Directory.GetFiles(_paksDir, "*.utoc", SearchOption.TopDirectoryOnly);
 
             var filtered = allUtocs
@@ -61,60 +60,61 @@ namespace UnrealPorting
                 .OrderBy(f => f)
                 .ToList();
 
-            Console.WriteLine($"[AES] Displaying {filtered.Count} filtered .utoc files.");
-
-            // ✅ Load existing aes_keys.txt
             var profile = App.SelectedProfile;
-
             _loadedKeys.Clear();
 
             if (profile != null)
             {
-                // Load filename keys
                 foreach (var kv in profile.AesFileKeys)
                     _loadedKeys[kv.Key] = kv.Value;
 
-                // Load GUID keys (convert GUID → hex)
                 foreach (var kv in profile.AesGuidKeys)
                     _loadedKeys[kv.Key] = kv.Value;
             }
 
-            Console.WriteLine($"[AES] Loaded {_loadedKeys.Count} key(s) from active profile.");
-
-            // ✅ Build UI rows
             foreach (var file in filtered)
             {
-                var fileName = Path.GetFileName(file);
+                string fileName = Path.GetFileName(file);
 
-                var row = new StackPanel
+                // 🔵 CONTAINER (round, shaded, themed)
+                var container = new Border
                 {
-                    Orientation = Orientation.Horizontal,
-                    Margin = new Thickness(0, 5, 0, 5)
+                    Style = (Style)FindResource("AESItemContainer")
                 };
 
+                // Inner layout for label + textbox
+                var rowGrid = new Grid();
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(360) });
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+                // Filename label
                 var nameLabel = new TextBlock
                 {
                     Text = fileName,
-                    Width = 380,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Foreground = System.Windows.Media.Brushes.White,
+                    FontSize = 14
                 };
 
+                // Key textbox
                 var keyBox = new TextBox
                 {
-                    Width = 450,
+                    Width = 420,
                     Text = _loadedKeys.ContainsKey(fileName) ? _loadedKeys[fileName] : "",
-                    Background = System.Windows.Media.Brushes.DimGray,
-                    Foreground = System.Windows.Media.Brushes.White,
-                    BorderBrush = System.Windows.Media.Brushes.Gray,
-                    BorderThickness = new Thickness(1),
-                    FontFamily = new System.Windows.Media.FontFamily("Consolas"),
-                    FontSize = 13,
-                    Margin = new Thickness(10, 0, 0, 0)
+                    Style = (Style)FindResource("AESInputBox")
                 };
 
-                row.Children.Add(nameLabel);
-                row.Children.Add(keyBox);
-                AESListPanel.Children.Add(row);
+                Grid.SetColumn(nameLabel, 0);
+                Grid.SetColumn(keyBox, 1);
+
+                rowGrid.Children.Add(nameLabel);
+                rowGrid.Children.Add(keyBox);
+
+                // Put row into container
+                container.Child = rowGrid;
+
+                // Add to stack panel
+                AESListPanel.Children.Add(container);
             }
         }
 
@@ -124,12 +124,16 @@ namespace UnrealPorting
             GuidKeys.Clear();
             FileKeys.Clear();
 
-            foreach (StackPanel row in AESListPanel.Children)
+            foreach (Border container in AESListPanel.Children)
             {
-                if (row.Children.Count < 2) continue;
+                if (container.Child is not Grid rowGrid)
+                    continue;
 
-                var nameBlock = row.Children[0] as TextBlock;
-                var keyBox = row.Children[1] as TextBox;
+                if (rowGrid.Children.Count < 2)
+                    continue;
+
+                var nameBlock = rowGrid.Children[0] as TextBlock;
+                var keyBox = rowGrid.Children[1] as TextBox;
 
                 if (nameBlock == null || keyBox == null)
                     continue;
@@ -143,26 +147,19 @@ namespace UnrealPorting
                 if (!keyText.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
                     keyText = "0x" + keyText;
 
-                // Store raw
                 ResolvedKeys[fileName] = keyText;
 
-                // 🔥 Sort keys into GUID vs Filename
                 string hex = keyText.Replace("0x", "", StringComparison.OrdinalIgnoreCase).Trim();
 
                 if (fileName.Length == 32 && fileName.All(Uri.IsHexDigit))
                 {
-                    // GUID-style (pak guid)
                     GuidKeys[new Guid(fileName)] = hex;
                 }
                 else
                 {
-                    // Filename-based (pakchunk1007-WindowsClient.utoc)
                     FileKeys[fileName] = hex;
                 }
             }
-
-            Console.WriteLine($"[AES] Received {ResolvedKeys.Count} AES key(s) from AES window.");
-            Console.WriteLine($"[AES] → GUID Keys: {GuidKeys.Count}, File Keys: {FileKeys.Count}");
 
             DialogResult = true;
             Close();

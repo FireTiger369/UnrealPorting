@@ -14,6 +14,7 @@ namespace UnrealPorting
         private readonly System.Timers.Timer _timer;
 
         public string? SelectedPath { get; private set; }
+        public static string LastSearchText = "";
 
         public SearchWindow(List<string> filePaths)
         {
@@ -24,14 +25,37 @@ namespace UnrealPorting
             _timer = new System.Timers.Timer(150);
             _timer.AutoReset = false;
             _timer.Elapsed += DoSearch;
+
+            PlaceholderText.Visibility =
+                string.IsNullOrWhiteSpace(SearchBox.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            PlaceholderText.Visibility =
+                string.IsNullOrWhiteSpace(SearchBox.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
             _timer.Stop();
             _timer.Start();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            SearchBox.Text = LastSearchText;
+            PlaceholderText.Visibility =
+                string.IsNullOrWhiteSpace(SearchBox.Text)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            LastSearchText = SearchBox.Text;
+        }
         private void DoSearch(object? sender, ElapsedEventArgs e)
         {
             string query = "";
@@ -67,6 +91,28 @@ namespace UnrealPorting
             if (ResultsList.SelectedItem is string path)
             {
                 AssetSelected?.Invoke(path);   // Notify MainWindow
+            }
+        }
+        private void SearchBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (ResultsList.Items.Count == 0) return;
+
+            if (e.Key == Key.Down)
+            {
+                ResultsList.SelectedIndex =
+                    Math.Min(ResultsList.SelectedIndex + 1, ResultsList.Items.Count - 1);
+                ResultsList.ScrollIntoView(ResultsList.SelectedItem);
+            }
+            else if (e.Key == Key.Up)
+            {
+                ResultsList.SelectedIndex =
+                    Math.Max(ResultsList.SelectedIndex - 1, 0);
+                ResultsList.ScrollIntoView(ResultsList.SelectedItem);
+            }
+            else if (e.Key == Key.Enter)
+            {
+                if (ResultsList.SelectedItem is string path)
+                    AssetSelected?.Invoke(path);
             }
         }
     }

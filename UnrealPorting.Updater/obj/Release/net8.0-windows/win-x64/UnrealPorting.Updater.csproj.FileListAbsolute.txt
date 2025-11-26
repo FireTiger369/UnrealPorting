@@ -13,6 +13,7 @@ C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-wi
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.AssemblyInfoInputs.cache
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.AssemblyInfo.cs
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.csproj.CoreCompileInputs.cache
+C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.sourcelink.json
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.dll
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\refint\UnrealPorting.Updater.dll
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\UnrealPorting.Updater.pdb

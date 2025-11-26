@@ -1,7 +1,7 @@
 ﻿UnrealPorting.Updater
 1.0.0.0
 
-exe
+winexe
 C#
 .cs
 C:\Users\thero\Desktop\UnrealPorting\UnrealPorting.Updater\obj\Release\net8.0-windows\win-x64\

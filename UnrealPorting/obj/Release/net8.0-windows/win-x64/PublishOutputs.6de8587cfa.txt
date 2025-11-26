@@ -1,0 +1,14 @@
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.pdb
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.Updater.exe
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\Resources\oo2core_5_win64.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\Resources\oo2core_7_win64.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\Resources\oo2core_8_win64.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\Resources\oo2core_9_win64.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.Updater.runtimeconfig.json
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.dll.config
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\blake3_dotnet.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\libSkiaSharp.dll
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\CUE4Parse-Conversion.pdb
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\CUE4Parse.pdb
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.Updater.pdb
+C:\Users\thero\Desktop\UnrealPorting\PublishOutput\UnrealPorting.exe

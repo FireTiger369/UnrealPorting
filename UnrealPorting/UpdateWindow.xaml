@@ -17,6 +17,85 @@
                           BlurRadius="25"
                           ShadowDepth="0"
                           Opacity="0.35"/>
+        <!-- Nice blue-themed button -->
+        <Style x:Key="BlueButton" TargetType="Button">
+            <Setter Property="Background" Value="#14254E"/>
+            <!-- deep blue -->
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#5AA6FF"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#5AA6FF"
+                      BlurRadius="15"
+                      ShadowDepth="0"
+                      Opacity="0.45"/>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+
+                <!-- MUCH more readable hover -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#223E75"/>
+                    <!-- brighter blue -->
+                    <Setter Property="BorderBrush" Value="#8EBEFF"/>
+                    <!-- lighter outline -->
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="#8EBEFF"
+                              BlurRadius="22"
+                              ShadowDepth="0"
+                              Opacity="0.7"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
+                <!-- Clicked -->
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#0D1834"/>
+                    <!-- darker but still readable -->
+                    <Setter Property="BorderBrush" Value="#5AA6FF"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+        <!-- Gray cancel button -->
+        <Style x:Key="GrayButton" TargetType="Button">
+            <Setter Property="Background" Value="#1F1F23"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#26262C"/>
+
+            <Style.Triggers>
+
+                <!-- Way more visible hover -->
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2B2D33"/>
+                    <Setter Property="BorderBrush" Value="#5AA6FF"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <!-- ensures no loss in contrast -->
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="#5AA6FF"
+                              BlurRadius="18"
+                              ShadowDepth="0"
+                              Opacity="0.55"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#18181B"/>
+                    <Setter Property="BorderBrush" Value="#5AA6FF"/>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
 
     <Grid Background="#111218" Margin="20">
@@ -74,7 +153,6 @@
                     <Button Content="Skip"
                             Width="90"
                             Height="32"
-                            FontWeight="SemiBold"
                             Margin="0 0 10 0"
                             Foreground="#E5E7EB"
                             Background="#20212A"
@@ -82,34 +160,6 @@
                             BorderThickness="1"
                             Cursor="Hand"
                             Click="Skip_Click">
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Background" Value="#20212A"/>
-                                <Setter Property="Foreground" Value="#E5E7EB"/>
-                                <Setter Property="BorderBrush" Value="#2A2A2D"/>
-                                <Setter Property="BorderThickness" Value="1"/>
-                                <Setter Property="Cursor" Value="Hand"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border x:Name="Bg"
-                                                    Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                                    CornerRadius="6">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="#2C2D38"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
                     </Button>
 
                     <!-- Update -->
@@ -125,33 +175,10 @@
                             Click="Update_Click">
                         <Button.Effect>
                             <DropShadowEffect Color="#5AA6FF"
-                                              BlurRadius="30"
+                                              BlurRadius="20"
                                               ShadowDepth="0"
-                                              Opacity="0.65"/>
+                                              Opacity="0.6"/>
                         </Button.Effect>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border x:Name="Bg"
-                                                    Background="{TemplateBinding Background}"
-                                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                                    CornerRadius="6">
-                                                <ContentPresenter HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="Bg" Property="Background" Value="#7AB7FF"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Button.Style>
                     </Button>
 
                 </StackPanel>

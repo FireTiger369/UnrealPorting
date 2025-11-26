@@ -43,10 +43,7 @@ namespace UnrealPorting
             {
                 MappingsPathBox.Text = dlg.FileName;  // ⭐ FIX: store in textbox only
 
-                MessageBox.Show("Selected Mappings:\n" + dlg.FileName,
-                                "Mappings Loaded",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Information);
+                ToastManager.ShowToast(Application.Current.MainWindow, "Mappings file selected.", ToastType.Success);
             }
         }
 
@@ -72,7 +69,7 @@ namespace UnrealPorting
             // Save to disk
             GameProfileStore.Save();
 
-            MessageBox.Show("Settings saved.");
+            ToastManager.ShowToast(Application.Current.MainWindow, "Settings saved.", ToastType.Success);
             this.DialogResult = true;
             Close();
         }
