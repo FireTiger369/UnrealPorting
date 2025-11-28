@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v8.0": {},
     ".NETCoreApp,Version=v8.0/win-x64": {
-      "UnrealPorting/1.0.3": {
+      "UnrealPorting/1.0.4": {
         "dependencies": {
           "AvalonEdit": "6.3.1.120",
           "Blake3": "2.0.0",
@@ -1312,7 +1312,7 @@
     }
   },
   "libraries": {
-    "UnrealPorting/1.0.3": {
+    "UnrealPorting/1.0.4": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
