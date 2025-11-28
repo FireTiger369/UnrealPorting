@@ -7,7 +7,7 @@ namespace UnrealPorting
     {
         private static readonly List<ToastWindow> ActiveToasts = new();
 
-        public static void ShowToast(Window parent, string message, ToastType type = ToastType.Info)
+        public static void ShowToast(Window parent, string message, ToastType type = ToastType.Info, string? filePath = null)
         {
             // Calculate stacked vertical offset
             double offsetY = 20;
@@ -15,7 +15,7 @@ namespace UnrealPorting
                 offsetY += t.ActualHeight + 12;
 
             // Create toast (positioning happens inside constructor)
-            var toast = new ToastWindow(parent, message, type, offsetY);
+            var toast = new ToastWindow(parent, message, type, offsetY, filePath);
 
             ActiveToasts.Add(toast);
 

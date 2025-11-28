@@ -380,8 +380,9 @@ namespace UnrealPorting.Helpers
                 using var image = resized.Encode(SKEncodedImageFormat.Png, 100);
                 File.WriteAllBytes(dlg.FileName, image.ToArray());
 
+                string outPath = dlg.FileName;
                 ToastManager.ShowToast(
-                    window, $"Exported {tex.Name} Mip {mipIndex} ({targetW}x{targetH})", ToastType.Success
+                    window, $"Exported {tex.Name} Mip {mipIndex} ({targetW}x{targetH})", ToastType.Success, outPath
                 );
             }
             catch (Exception ex)
@@ -473,7 +474,7 @@ namespace UnrealPorting.Helpers
 
                 // Show JSON after export
                 // Notify user
-                ToastManager.ShowToast(window, "JSON exported successfully.", ToastType.Success);
+                ToastManager.ShowToast(window, "JSON exported successfully.", ToastType.Success, outputPath);
 
                 // And still show the JSON in the preview panel
                 window.ShowSinglePaneText(json);
@@ -512,7 +513,7 @@ namespace UnrealPorting.Helpers
                 if (export is UTexture2D tex)
                 {
                     ExportSingleTexture(tex, outDir);
-                    ToastManager.ShowToast(window, $"Exported texture:\n{tex.Name}.png", ToastType.Success);
+                    ToastManager.ShowToast(window, $"Exported texture:\n{tex.Name}.png", ToastType.Success, outDir);
                     return;
                 }
 
@@ -524,7 +525,7 @@ namespace UnrealPorting.Helpers
                     foreach (var t in textures)
                         ExportSingleTexture(t, outDir);
 
-                    ToastManager.ShowToast(window, $"Exported {textures.Count} textures from material:\n{mat.Name}", ToastType.Success);
+                    ToastManager.ShowToast(window, $"Exported {textures.Count} textures from material:\n{mat.Name}", ToastType.Success, outDir);
                     return;
                 }
 
@@ -722,7 +723,7 @@ namespace UnrealPorting.Helpers
                     ExportTexturePNG(tex, outDir);
 
                 ToastManager.ShowToast(
-                    window, $"Export complete.\n{textures.Count} textures exported from:\n{export.Name}", ToastType.Success);
+                    window, $"Export complete.\n{textures.Count} textures exported from:\n{export.Name}", ToastType.Success, outDir);
             }
             catch (Exception ex)
             {

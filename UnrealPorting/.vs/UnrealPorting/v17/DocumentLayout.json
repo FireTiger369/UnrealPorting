@@ -3,28 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\directoryselectorwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:directoryselectorwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\updatewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:updatewindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\directoryselectorwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:directoryselectorwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\helpers\\previewmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:helpers\\previewmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\helpers\\apppakreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:helpers\\apppakreader.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\toastmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:toastmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\searchwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:searchwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\toastwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:toastwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|c:\\users\\thero\\desktop\\unrealporting\\unrealporting\\toastwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{84B5B52B-99EF-4CFE-B047-34576924E0E1}|UnrealPorting.csproj|solutionrelative:toastwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,7 +42,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,7 +50,32 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 4,
+              "Title": "AppPakReader.cs",
+              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\Helpers\\AppPakReader.cs",
+              "RelativeDocumentMoniker": "Helpers\\AppPakReader.cs",
+              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\Helpers\\AppPakReader.cs",
+              "RelativeToolTip": "Helpers\\AppPakReader.cs",
+              "ViewState": "AgIAAI4BAAAAAAAAAAApwJ0BAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-27T08:38:29.759Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "MainWindow.xaml",
+              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\MainWindow.xaml",
+              "RelativeToolTip": "MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-11-26T04:15:55.472Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "DirectorySelectorWindow.xaml",
               "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\DirectorySelectorWindow.xaml",
               "RelativeDocumentMoniker": "DirectorySelectorWindow.xaml",
@@ -54,13 +87,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "MainWindow.xaml.cs",
               "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\MainWindow.xaml.cs",
               "RelativeToolTip": "MainWindow.xaml.cs",
-              "ViewState": "AgIAAEACAAAAAAAAAAApwFICAAAfAAAAAAAAAA==",
+              "ViewState": "AgIAANYAAAAAAAAAAAApwPEAAAAaAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-26T00:47:06.591Z",
               "EditorCaption": ""
@@ -73,68 +106,45 @@
               "RelativeDocumentMoniker": "Helpers\\PreviewManager.cs",
               "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\Helpers\\PreviewManager.cs",
               "RelativeToolTip": "Helpers\\PreviewManager.cs",
-              "ViewState": "AgIAAKUBAAAAAAAAAAASwLcBAAARAAAAAAAAAA==",
+              "ViewState": "AgIAAM4CAAAAAAAAAAAQwN4CAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-11-25T11:48:30.392Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
+              "Title": "ToastWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastWindow.xaml.cs",
+              "RelativeDocumentMoniker": "ToastWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastWindow.xaml.cs",
+              "RelativeToolTip": "ToastWindow.xaml.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAA5wD0AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-26T04:30:56.496Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "ToastManager.cs",
               "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastManager.cs",
               "RelativeDocumentMoniker": "ToastManager.cs",
               "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastManager.cs",
               "RelativeToolTip": "ToastManager.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAArAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-25T11:39:39.244Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-25T11:39:39.244Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "SearchWindow.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\SearchWindow.xaml.cs",
-              "RelativeDocumentMoniker": "SearchWindow.xaml.cs",
-              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\SearchWindow.xaml.cs",
-              "RelativeToolTip": "SearchWindow.xaml.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAAwwDcAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-25T11:11:48.355Z"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "Orientation": 0,
-      "VerticalTabListWidth": 256,
-      "FloatingWindowState": {
-        "Id": "b2608abb-38fe-43ff-a45f-cc82d78bbffe",
-        "Display": 1,
-        "X": 394,
-        "Y": 109,
-        "Width": 1531,
-        "Height": 765,
-        "WindowState": 2
-      },
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "UpdateWindow.xaml",
-              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\UpdateWindow.xaml",
-              "RelativeDocumentMoniker": "UpdateWindow.xaml",
-              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\UpdateWindow.xaml",
-              "RelativeToolTip": "UpdateWindow.xaml",
+              "DocumentIndex": 7,
+              "Title": "ToastWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastWindow.xaml",
+              "RelativeDocumentMoniker": "ToastWindow.xaml",
+              "ToolTip": "C:\\Users\\thero\\Desktop\\UnrealPorting\\UnrealPorting\\ToastWindow.xaml",
+              "RelativeToolTip": "ToastWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2025-11-25T22:23:08.759Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-26T04:48:39.789Z"
             }
           ]
         }

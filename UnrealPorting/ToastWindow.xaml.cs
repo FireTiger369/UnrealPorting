@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
@@ -37,15 +41,48 @@ namespace UnrealPorting
             // Store for RunAnimation’s fade-out
             _displayDuration = duration;
         }
-
-        public ToastWindow(Window parent, string message, ToastType type, double offsetY)
+        private readonly string? _filePath;
+        public ToastWindow(Window parent, string message, ToastType type, double offsetY, string? filePath = null)
         {
             InitializeComponent();
 
             _parent = parent;
             _offsetY = offsetY;
+            _filePath = filePath;
 
             MessageText.Text = message;
+            if (!string.IsNullOrEmpty(_filePath))
+            {
+                var link = new TextBlock
+                {
+                    Text = "Open Folder",
+                    Foreground = new SolidColorBrush(Color.FromRgb(90, 166, 255)),
+                    FontSize = 13,
+                    Margin = new Thickness(14, 0, 14, 6),
+                    Cursor = Cursors.Hand,
+                    TextDecorations = TextDecorations.Underline
+                };
+
+                link.MouseLeftButtonDown += (s, e) =>
+                {
+                    try
+                    {
+                        if (File.Exists(_filePath))
+                            Process.Start("explorer.exe", "/select," + _filePath);
+                        else if (Directory.Exists(_filePath))
+                            Process.Start("explorer.exe", _filePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Failed to open folder:\n" + ex.Message);
+                    }
+                };
+
+                Grid.SetColumn(link, 1); // same column as MessageText
+                Grid.SetRow(link, 1);    // row under the message
+
+                ((Grid)OuterBorder.Child).Children.Add(link);
+            }
 
             string accent = "#5AA6FF";
             string dropShadow = "#5AA6FF";

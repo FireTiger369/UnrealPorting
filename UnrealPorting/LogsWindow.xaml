@@ -92,12 +92,31 @@
 
             <Button Content="Clear"
                     Width="100"
+                    Height="32"
                     Margin="0 0 10 0"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    Background="#20212A"
+                    BorderBrush="#2A2A2D"
                     Click="Clear_Click"/>
 
             <Button Content="Close"
                     Width="100"
-                    Click="Close_Click"/>
+                    Height="32"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    Background="#5AA6FF"
+                    BorderBrush="#5AA6FF"
+                    BorderThickness="1"
+                    Cursor="Hand"
+                    Click="Close_Click">
+                <Button.Effect>
+                    <DropShadowEffect Color="#5AA6FF"
+                                      BlurRadius="20"
+                                      ShadowDepth="0"
+                                      Opacity="0.6"/>
+                </Button.Effect>
+            </Button>
         </StackPanel>
 
     </Grid>

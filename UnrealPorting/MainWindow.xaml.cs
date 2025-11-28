@@ -45,12 +45,14 @@ namespace UnrealPorting
         private string _oodleDllPath = "";
         private LogsWindow _logsWindow;
         private readonly List<string> _logHistory = new();
+        private string? _copiedAssetPath;
         public MainWindow()
         {
             Console.WriteLine("[DEBUG] MainWindow created — UI hooks active");
             ReplaceUpdaterIfNeeded();
 
             InitializeComponent();
+            GamePackagesTreeView.PreviewMouseRightButtonDown += OnPackagesRightClick;
             AddLog("Current version = " + App.CurrentVersion);
             ToastManager.ShowToast(this, "Current version: " + App.CurrentVersion, ToastType.Info);
             AppVersionLabel.Text = $"Version {App.CurrentVersion}";
@@ -223,9 +225,18 @@ namespace UnrealPorting
 
             // Load assets
             var assets = _globalFilePaths
-                .Where(f => f.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                .Where(f => f.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase)
-                         || f.EndsWith(".umap", StringComparison.OrdinalIgnoreCase))
+                .Where(f =>
+                    f.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+                    (f.EndsWith(".uasset", StringComparison.OrdinalIgnoreCase) ||
+                     f.EndsWith(".umap", StringComparison.OrdinalIgnoreCase)))
+                .Where(f =>
+                {
+                    // remove prefix
+                    string remainder = f.Substring(prefix.Length);
+
+                    // MUST NOT contain a slash -> direct child only
+                    return !remainder.Contains('/');
+                })
                 .Select(Path.GetFileName)
                 .Distinct()
                 .ToList();
@@ -492,6 +503,10 @@ namespace UnrealPorting
         {
             var win = new DirectorySelectorWindow();
             win.Owner = this;
+            win.OnProfileConfirmed += () =>
+            {
+                BtnLoadArchives.Visibility = Visibility.Visible;
+            };
             win.ShowDialog();
         }
 
@@ -577,6 +592,7 @@ namespace UnrealPorting
             }
 
             ShowSpinner(); // 🔵 start animation immediately
+            BtnLoadArchives.Visibility = Visibility.Collapsed;
 
             await Task.Run(() =>
             {
@@ -1088,6 +1104,142 @@ namespace UnrealPorting
 
             return true;
         }
+
+        private void OnPackagesRightClick(object sender, MouseButtonEventArgs e)
+        {
+            DependencyObject? source = e.OriginalSource as DependencyObject;
+
+            while (source != null && source is not TreeViewItem)
+                source = VisualTreeHelper.GetParent(source);
+
+            if (source is TreeViewItem tvi && tvi.Tag is string path)
+            {
+                _copiedAssetPath = path;
+                tvi.IsSelected = true;
+            }
+        }
+
+        private void CopyFullPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(_copiedAssetPath))
+                Clipboard.SetText(_copiedAssetPath);
+            ToastManager.ShowToast(this, "Full asset path copied!", ToastType.Success);
+        }
+        private void CopyNoExt_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_copiedAssetPath))
+                return;
+
+            string noExt = System.IO.Path.Combine(
+                System.IO.Path.GetDirectoryName(_copiedAssetPath)!,
+                System.IO.Path.GetFileNameWithoutExtension(_copiedAssetPath)
+            ).Replace("\\", "/");
+
+            Clipboard.SetText(noExt);
+            ToastManager.ShowToast(this, "Asset path without extension copied!", ToastType.Success);
+        }
+        private void CopyObjectPath_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(_copiedAssetPath))
+                return;
+
+            string path = _copiedAssetPath.Replace("\\", "/");
+
+            // remove FortniteGame/Content
+            string gameRel = path.Replace("FortniteGame/Content", "", StringComparison.OrdinalIgnoreCase);
+
+            // remove Engine/Content (for Engine assets)
+            gameRel = gameRel.Replace("Engine/Content", "/Engine", StringComparison.OrdinalIgnoreCase);
+
+            // prefix
+            if (!gameRel.StartsWith("/"))
+                gameRel = "/" + gameRel;
+
+            string assetName = System.IO.Path.GetFileNameWithoutExtension(gameRel);
+
+            string objectPath = $"{gameRel}.{assetName}";
+
+            Clipboard.SetText(objectPath);
+            ToastManager.ShowToast(this, "Unreal Object Path copied!", ToastType.Success);
+        }
+        private void CopyBlueprintRef_Click(object sender, RoutedEventArgs e)
+        {
+            if (GamePackagesTreeView.SelectedItem is not TreeViewItem item || item.Tag is null)
+                return;
+
+            string fullPath = item.Tag.ToString()!;
+
+            // Remove extensions (.uasset, .umap, etc.)
+            string pathNoExt = System.IO.Path.ChangeExtension(fullPath, null)
+                .Replace(".uexp", "")
+                .Replace(".ubulk", "");
+
+            //---------------------------------------------------------
+            // 1. Normalize path — remove FortniteGame roots
+            //---------------------------------------------------------
+            string cleaned = pathNoExt;
+
+            cleaned = cleaned.Replace("FortniteGame/Plugins/GameFeatures/", "");
+            cleaned = cleaned.Replace("/FortniteGame/Plugins/GameFeatures/", "");
+
+            cleaned = cleaned.Replace("FortniteGame/Content/", "");
+            cleaned = cleaned.Replace("/FortniteGame/Content/", "");
+            cleaned = cleaned.Replace("FortniteGame/", "");
+            cleaned = cleaned.Replace("/FortniteGame/", "");
+
+            // Remove /Content/ that appears INSIDE plugins
+            cleaned = cleaned.Replace("/Content/", "/");
+
+            cleaned = cleaned.TrimStart('/');
+
+            //---------------------------------------------------------
+            // 2. Fix duplicated folder endings (ex: SS_3200/SS_3200/SS_3200)
+            //---------------------------------------------------------
+            string[] parts = cleaned.Split('/');
+            if (parts.Length >= 3)
+            {
+                string filename = parts[^1];
+                string lastFolder = parts[^2];
+
+                if (lastFolder == filename)
+                {
+                    // Remove the duplicated last folder
+                    cleaned = string.Join("/", parts.Take(parts.Length - 1));
+                }
+            }
+
+            //---------------------------------------------------------
+            // 3. Extract asset name
+            //---------------------------------------------------------
+            string assetName = System.IO.Path.GetFileName(cleaned);
+
+            //---------------------------------------------------------
+            // 4. Build the Unreal object path EXACTLY like UE expects
+            //---------------------------------------------------------
+            // Example output:
+            // /Script/LevelSequence.LevelSequence'/SuperSport_03/Sequencer/SS_3200/SS_3200.SS_3200'
+            string ueRef =
+                $"/Script/LevelSequence.LevelSequence'/{cleaned}/{assetName}.{assetName}'";
+
+            //---------------------------------------------------------
+            // 5. Final JSON block 
+            //---------------------------------------------------------
+            string json =
+        $@"{{
+    ""Tagged"": [
+        [
+            ""Level Sequence"",
+            ""{ueRef}""
+        ]
+    ]
+}}";
+
+            Clipboard.SetText(json);
+
+            ToastManager.ShowToast(this, "Blueprint Reference copied!", ToastType.Success);
+        }
+
+
 
 
         private void ExportReferencedTextures_Click(object sender, RoutedEventArgs e)

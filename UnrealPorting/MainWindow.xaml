@@ -190,6 +190,243 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="DarkMenuItemParent" TargetType="MenuItem">
+            <Setter Property="Foreground" Value="#E5E7EB"/>
+            <Setter Property="Background" Value="#111218"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+
+                        <Grid>
+                            <!-- Button Area -->
+                            <Border x:Name="Bg"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="#26262C"
+                            BorderThickness="0"/>
+
+                            <Grid Margin="6,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="18"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- ICON -->
+                                <ContentPresenter Grid.Column="0"
+                                          ContentSource="Icon"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,8,0"/>
+
+                                <!-- TEXT -->
+                                <ContentPresenter Grid.Column="1"
+                                          ContentSource="Header"
+                                          VerticalAlignment="Center"/>
+
+                                <!-- ▶ SUBMENU ARROW -->
+                                <Path x:Name="Arrow"
+                              Grid.Column="2"
+                              Data="M0,0 L4,5 L0,10"
+                              Stroke="#8EBEFF"
+                              StrokeThickness="1.8"
+                              Visibility="Collapsed"
+                              VerticalAlignment="Center"
+                              HorizontalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- POPUP (built-in WPF submenu host) -->
+                            <Popup x:Name="Submenu"
+                           Placement="Right"
+                           AllowsTransparency="True"
+                           IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                           PopupAnimation="Fade"
+                           StaysOpen="False">
+                                <Border Background="#111218"
+                                BorderBrush="#26262C"
+                                BorderThickness="1"
+                                CornerRadius="4"
+                                Padding="2">
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <!-- TRIGGERS -->
+                        <ControlTemplate.Triggers>
+
+                            <!-- Highlight on hover -->
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#1F2A3F"/>
+                                <Setter Property="Foreground" Value="#8EBEFF"/>
+                            </Trigger>
+
+                            <!-- Show arrow if submenu exists -->
+                            <Trigger Property="HasItems" Value="True">
+                                <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+
+                            <!-- Highlight when submenu is open -->
+                            <Trigger Property="IsSubmenuOpen" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="#1F2A3F"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="ContextMenu" BasedOn="{StaticResource DarkContextMenu}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+        <!-- EXPANDER TOGGLE BUTTON (REQUIRED) -->
+        <Style x:Key="TreeExpanderButtonStyle" TargetType="ToggleButton">
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+
+                        <Grid Width="22" Height="22" Background="Transparent">
+
+                            <!-- Centered arrow using a Viewbox -->
+                            <Viewbox Width="10" Height="10"
+                             Stretch="Uniform"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center">
+
+                                <Path x:Name="Arrow"
+                              Data="M 0 0 L 4 5 L 0 10"
+                              Stroke="#7F8B9F"
+                              StrokeThickness="1.8"
+                              StrokeStartLineCap="Round"
+                              StrokeEndLineCap="Round"/>
+                            </Viewbox>
+
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+
+                            <!-- EXPANDED -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Arrow" Property="RenderTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="90" CenterX="5" CenterY="5"/>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="Arrow" Property="Stroke" Value="#A0C0FF"/>
+                            </Trigger>
+
+                            <!-- HOVER -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Arrow" Property="Stroke" Value="#B5CFFF"/>
+                            </Trigger>
+
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TreeItemGlowStyle" TargetType="TreeViewItem">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="2"/>
+            <Setter Property="HeaderTemplate" Value="{x:Null}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TreeViewItem">
+                        <StackPanel>
+                            <!-- HEADER ROW -->
+                            <Grid Margin="4,2,4,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="16"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- HIGHLIGHT BACKGROUND -->
+                                <Border x:Name="Highlight"
+                                Grid.ColumnSpan="2"
+                                Background="#0000"
+                                CornerRadius="4"
+                                Opacity="0"/>
+
+                                <!-- EXPANDER -->
+                                <ToggleButton x:Name="ExpanderToggle"
+                                      Grid.Column="0"
+                                      Style="{StaticResource TreeExpanderButtonStyle}"
+                                      IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Visibility="Collapsed"/>
+
+                                <!-- HEADER CONTENT (whatever you set as Header) -->
+                                <ContentPresenter Grid.Column="1"
+                                          Margin="4,0,0,0"
+                                          VerticalAlignment="Center"
+                                          ContentSource="Header"/>
+                            </Grid>
+
+                            <!-- CHILDREN -->
+                            <ItemsPresenter x:Name="ChildrenHost"
+                                    Margin="20,2,4,2"/>
+                        </StackPanel>
+
+                        <ControlTemplate.Triggers>
+                            <!-- Show expander if there are children -->
+                            <Trigger Property="HasItems" Value="True">
+                                <Setter TargetName="ExpanderToggle"
+                                Property="Visibility"
+                                Value="Visible"/>
+                            </Trigger>
+
+                            <!-- Collapse children when not expanded -->
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter TargetName="ChildrenHost"
+                                Property="Visibility"
+                                Value="Collapsed"/>
+                            </Trigger>
+
+                            <!-- Hover highlight -->
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Highlight"
+                                Property="Opacity"
+                                Value="0.22"/>
+                                <Setter TargetName="Highlight"
+                                Property="Background"
+                                Value="#263049"/>
+                            </Trigger>
+
+                            <!-- Selected highlight -->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="Highlight"
+                                Property="Opacity"
+                                Value="1"/>
+                                <Setter TargetName="Highlight"
+                                Property="Background"
+                                Value="#263049"/>
+                                <Setter TargetName="Highlight" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#5AA6FF"
+                                                  BlurRadius="22"
+                                                  ShadowDepth="0"
+                                                  Opacity="0.55"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!-- Easing -->
         <SineEase x:Key="SineEaseOut" EasingMode="EaseOut"/>
@@ -358,25 +595,15 @@
                                        FontSize="11"
                                        TextWrapping="Wrap"
                                        Margin="0,2,0,0"/>
-                                <TextBlock x:Name="AppVersionLabel"
+                            <TextBlock x:Name="AppVersionLabel"
                                        Text="Version"
                                        FontSize="11"
                                        Foreground="#5AA6FF"
                                        Opacity="0.75"
                                        HorizontalAlignment="Left"
                                        Margin="2,40,0,0"/>
-                                <TextBlock Text="© 2024 UnrealPorting"
-                                       FontSize="11"
-                                       Foreground="#6B7280"
-                                       HorizontalAlignment="Left"
-                                       Margin="2,4,0,0"/>
-                                <TextBlock Text="All rights reserved."
-                                       FontSize="11"
-                                       Foreground="#6B7280"
-                                       HorizontalAlignment="Left"
-                                       Margin="2,0,0,0"/>
 
-                            </StackPanel>
+                        </StackPanel>
                         </Grid>
                     </Border>
                 </Border>
@@ -624,7 +851,7 @@
 
                                                 <TreeView x:Name="ArchivesTreeView"
                                                       Style="{StaticResource DarkTreeView}"
-                                                      ItemContainerStyle="{StaticResource DarkTreeViewItem}"
+                                                      ItemContainerStyle="{StaticResource TreeItemGlowStyle}"
                                                       SelectedItemChanged="ArchivesTreeView_SelectedItemChanged"
                                                       Foreground="White"
                                                       Background="#14141A"/>
@@ -632,56 +859,156 @@
                                         </Grid>
                                     </TabItem>
 
-                                    <!-- GAME FOLDERS TAB -->
-                                    <TabItem Header="Game Folders">
-                                        <Grid Margin="0,10,0,0">
-                                            <TreeView x:Name="GameFoldersTreeView"
+                                <!-- GAME FOLDERS TAB -->
+                                <TabItem Header="Game Folders">
+                                    <Grid Margin="0,10,0,0">
+                                        <TreeView x:Name="GameFoldersTreeView"
                                                   Style="{StaticResource DarkTreeView}"
                                                   SelectedItemChanged="GameFoldersTreeView_SelectedItemChanged"
                                                   MouseDoubleClick="GameFoldersTreeView_MouseDoubleClick">
-                                                <TreeView.Resources>
-                                                    <DataTemplate x:Key="FolderClosedTemplate">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{StaticResource FolderClosedIcon}"
+
+                                            <!-- Only this TreeView gets its own item style -->
+                                            <TreeView.Resources>
+
+                                                <!-- CLOSED FOLDER TEMPLATE -->
+                                                <DataTemplate x:Key="FolderClosedTemplate">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{StaticResource FolderClosedIcon}"
                                                                Width="16" Height="16"
                                                                Margin="0,0,6,0"/>
-                                                            <TextBlock Text="{Binding}" Foreground="White"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
+                                                        <TextBlock Text="{Binding}" Foreground="White"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
 
-                                                    <DataTemplate x:Key="FolderOpenTemplate">
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <Image Source="{StaticResource FolderOpenIcon}"
+                                                <!-- OPEN FOLDER TEMPLATE -->
+                                                <DataTemplate x:Key="FolderOpenTemplate">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Image Source="{StaticResource FolderOpenIcon}"
                                                                Width="16" Height="16"
                                                                Margin="0,0,6,0"/>
-                                                            <TextBlock Text="{Binding}" Foreground="White"/>
-                                                        </StackPanel>
-                                                    </DataTemplate>
+                                                        <TextBlock Text="{Binding}" Foreground="White"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
 
-                                                    <Style TargetType="TreeViewItem">
-                                                        <Setter Property="HeaderTemplate"
+                                                <!-- MAIN GAME FOLDER ITEM STYLE -->
+                                                <Style TargetType="TreeViewItem">
+                                                    <Setter Property="Padding" Value="2"/>
+
+                                                    <!-- Default header uses CLOSED template -->
+                                                    <Setter Property="HeaderTemplate"
                                                             Value="{StaticResource FolderClosedTemplate}"/>
-                                                        <Style.Triggers>
-                                                            <Trigger Property="IsExpanded" Value="True">
-                                                                <Setter Property="HeaderTemplate"
-                                                                    Value="{StaticResource FolderOpenTemplate}"/>
-                                                            </Trigger>
-                                                            <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Background" Value="#263049"/>
-                                                                <Setter Property="Foreground" Value="White"/>
-                                                            </Trigger>
-                                                    </Style.Triggers>
-                                                    </Style>
-                                                </TreeView.Resources>
-                                            </TreeView>
-                                        </Grid>
-                                    </TabItem>
 
-                                    <!-- GAME PACKAGES TAB -->
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="TreeViewItem">
+
+                                                                <StackPanel>
+
+                                                                    <!-- HEADER AREA -->
+                                                                    <Border x:Name="HeaderHighlight"
+                                                                            Background="#0000"
+                                                                            CornerRadius="4"
+                                                                            Margin="2,1"
+                                                                            Padding="2">
+
+                                                                        <Grid>
+                                                                            <Grid.ColumnDefinitions>
+                                                                                <ColumnDefinition Width="24"/>
+                                                                                <ColumnDefinition Width="*"/>
+                                                                            </Grid.ColumnDefinitions>
+
+                                                                            <!-- Expand arrow -->
+                                                                            <ToggleButton x:Name="ExpanderToggle"
+                                                                                          Grid.Column="0"
+                                                                                          HorizontalAlignment="Center"
+                                                                                          VerticalAlignment="Center"
+                                                                                          Style="{StaticResource TreeExpanderButtonStyle}"
+                                                                                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                                          Visibility="Collapsed"/>
+
+                                                                            <!-- ICON + TEXT from HeaderTemplate -->
+                                                                            <ContentPresenter Grid.Column="1"
+                                                                                              Margin="4,0,0,0"
+                                                                                              VerticalAlignment="Center"
+                                                                                              Content="{TemplateBinding Header}"
+                                                                                              ContentTemplate="{TemplateBinding HeaderTemplate}"/>
+                                                                        </Grid>
+                                                                    </Border>
+
+                                                                    <!-- CHILDREN -->
+                                                                    <ItemsPresenter x:Name="ItemsHost"
+                                                                                    Margin="20,2,4,2"/>
+
+                                                                </StackPanel>
+
+                                                                <ControlTemplate.Triggers>
+
+                                                                    <!-- If node has children → show expander -->
+                                                                    <Trigger Property="HasItems" Value="True">
+                                                                        <Setter TargetName="ExpanderToggle"
+                                                                                Property="Visibility" Value="Visible"/>
+                                                                    </Trigger>
+
+                                                                    <!-- Collapse children -->
+                                                                    <Trigger Property="IsExpanded" Value="False">
+                                                                        <Setter TargetName="ItemsHost"
+                                                                                Property="Visibility" Value="Collapsed"/>
+                                                                    </Trigger>
+
+                                                                    <!-- Expanded → swap to OPEN folder icon -->
+                                                                    <Trigger Property="IsExpanded" Value="True">
+                                                                        <Setter Property="HeaderTemplate"
+                                                                                Value="{StaticResource FolderOpenTemplate}"/>
+                                                                    </Trigger>
+
+                                                                    <!-- Hover highlight -->
+                                                                    <Trigger SourceName="HeaderHighlight"
+                                                                             Property="IsMouseDirectlyOver"
+                                                                             Value="True">
+                                                                        <Setter TargetName="HeaderHighlight"
+                                                                                Property="Background"
+                                                                                Value="#263049"/>
+                                                                        <Setter TargetName="HeaderHighlight"
+                                                                                Property="Opacity" Value="0.6"/>
+                                                                    </Trigger>
+
+                                                                    <!-- Selected highlight -->
+                                                                    <Trigger Property="IsSelected" Value="True">
+                                                                        <Setter TargetName="HeaderHighlight"
+                                                                                Property="Background"
+                                                                                Value="#263049"/>
+                                                                        <Setter TargetName="HeaderHighlight"
+                                                                                Property="Opacity" Value="1"/>
+                                                                        <Setter TargetName="HeaderHighlight"
+                                                                                Property="Effect">
+                                                                            <Setter.Value>
+                                                                                <DropShadowEffect Color="#5AA6FF"
+                                                                                                  BlurRadius="18"
+                                                                                                  ShadowDepth="0"
+                                                                                                  Opacity="0.55"/>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </Trigger>
+
+                                                                </ControlTemplate.Triggers>
+
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+
+                                            </TreeView.Resources>
+                                        </TreeView>
+                                    </Grid>
+                                </TabItem>
+
+
+                                <!-- GAME PACKAGES TAB -->
                                     <TabItem Header="Game Packages">
                                         <Grid Margin="0,10,0,0">
                                             <TreeView x:Name="GamePackagesTreeView"
                                                   Style="{StaticResource DarkTreeView}"
+                                                  ItemContainerStyle="{StaticResource TreeItemGlowStyle}"
                                                   SelectedItemChanged="GamePackagesTreeView_SelectedItemChanged">
 
                                                 <TreeView.Resources>
@@ -693,35 +1020,29 @@
                                                     </Style>
                                                 </TreeView.Resources>
 
-                                                <TreeView.ContextMenu>
-                                                    <ContextMenu Style="{StaticResource DarkContextMenu}">
-                                                        <MenuItem Header="Export Texture"
+                                            <TreeView.ContextMenu>
+                                                <ContextMenu Style="{StaticResource DarkContextMenu}">
+                                                    <MenuItem Header="Export Texture"
                                                               Click="ExportTextures_Click"
                                                               Style="{StaticResource DarkMenuItem}"/>
-                                                        <MenuItem Header="Export Raw JSON"
+                                                    <MenuItem Header="Export Raw JSON"
                                                               Click="ExportJson_Click"
                                                               Style="{StaticResource DarkMenuItem}"/>
-                                                        <MenuItem Header="Export Referenced Textures"
+                                                    <MenuItem Header="Export Referenced Textures"
                                                               Click="ExportReferencedTextures_Click"
                                                               Style="{StaticResource DarkMenuItem}"/>
-                                                        <MenuItem Header="Export Selected Mip..."
+                                                    <MenuItem Header="Export Selected Mip..."
                                                               Click="ExportMip_Click"
                                                               Style="{StaticResource DarkMenuItem}"/>
-                                                    </ContextMenu>
-                                                </TreeView.ContextMenu>
-
-                                                <TreeView.ItemContainerStyle>
-                                                    <Style TargetType="TreeViewItem">
-                                                        <Setter Property="HeaderTemplate">
-                                                            <Setter.Value>
-                                                                <DataTemplate>
-                                                                    <ContentPresenter Content="{Binding}"/>
-                                                                </DataTemplate>
-                                                            </Setter.Value>
-                                                        </Setter>
-                                                    </Style>
-                                                </TreeView.ItemContainerStyle>
-                                            </TreeView>
+                                                    <MenuItem Header="Copy" Style="{StaticResource DarkMenuItemParent}">
+                                                        <MenuItem Header="Full Path" Click="CopyFullPath_Click" Style="{StaticResource DarkMenuItem}"/>
+                                                        <MenuItem Header="Full Path W/o Extentinsion" Click="CopyNoExt_Click" Style="{StaticResource DarkMenuItem}"/>
+                                                        <MenuItem Header="Unreal Object Path" Click="CopyObjectPath_Click" Style="{StaticResource DarkMenuItem}"/>
+                                                        <MenuItem Header="Blueprint Reference Path (For Experienced Users)" Click="CopyBlueprintRef_Click" Style="{StaticResource DarkMenuItem}"/>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </TreeView.ContextMenu>
+                                        </TreeView>
                                         </Grid>
                                     </TabItem>
                                 </TabControl>
@@ -811,93 +1132,92 @@
                             </Grid>
 
                             <!-- LOADING OVERLAY -->
-                                <Grid x:Name="LoadingOverlay"
+                            <Grid x:Name="LoadingOverlay"
                                   Visibility="Collapsed"
                                   Background="#00000055"
                                   Panel.ZIndex="9999">
-                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                                        <!-- background ring -->
-                                        <Ellipse Width="40" Height="40"
+                                    <!-- background ring -->
+                                    <Ellipse Width="40" Height="40"
                                              Stroke="#1AFFFFFF"
                                              StrokeThickness="4"/>
 
-                                        <!-- main spinning arc -->
-                                        <Grid RenderTransformOrigin="0.5,0.5">
-                                            <Grid.RenderTransform>
-                                                <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
-                                            </Grid.RenderTransform>
+                                    <!-- main spinning arc -->
+                                    <Grid RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform x:Name="SpinnerRotate" Angle="0"/>
+                                        </Grid.RenderTransform>
 
-                                            <Path StrokeThickness="4"
+                                        <Path StrokeThickness="4"
                                               StrokeStartLineCap="Round"
                                               StrokeEndLineCap="Round">
-                                                <Path.Stroke>
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                        <GradientStop Color="#5AA6FF" Offset="0"/>
-                                                        <GradientStop Color="#A47CFF" Offset="0.5"/>
-                                                        <GradientStop Color="#5AA6FF" Offset="1"/>
-                                                    </LinearGradientBrush>
-                                                </Path.Stroke>
-                                                <Path.Data>
-                                                    <PathGeometry>
-                                                        <PathFigure StartPoint="20,4">
-                                                            <ArcSegment Point="36,20"
+                                            <Path.Stroke>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="#5AA6FF" Offset="0"/>
+                                                    <GradientStop Color="#A47CFF" Offset="0.5"/>
+                                                    <GradientStop Color="#5AA6FF" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Path.Stroke>
+                                            <Path.Data>
+                                                <PathGeometry>
+                                                    <PathFigure StartPoint="20,4">
+                                                        <ArcSegment Point="36,20"
                                                                     Size="16,16"
                                                                     SweepDirection="Clockwise"
                                                                     IsLargeArc="False"/>
-                                                        </PathFigure>
-                                                    </PathGeometry>
-                                                </Path.Data>
-                                                <Path.Effect>
-                                                    <DropShadowEffect Color="#6EA8FF"
+                                                    </PathFigure>
+                                                </PathGeometry>
+                                            </Path.Data>
+                                            <Path.Effect>
+                                                <DropShadowEffect Color="#6EA8FF"
                                                                   BlurRadius="45"
                                                                   Opacity="0.9"
                                                                   ShadowDepth="0"/>
-                                                </Path.Effect>
-                                            </Path>
-                                        </Grid>
+                                            </Path.Effect>
+                                        </Path>
+                                    </Grid>
 
-                                        <!-- energy sweep -->
-                                        <Grid RenderTransformOrigin="0.5,0.5">
-                                            <Grid.RenderTransform>
-                                                <RotateTransform x:Name="SweepRotate" Angle="0"/>
-                                            </Grid.RenderTransform>
+                                    <!-- energy sweep -->
+                                    <Grid RenderTransformOrigin="0.5,0.5">
+                                        <Grid.RenderTransform>
+                                            <RotateTransform x:Name="SweepRotate" Angle="0"/>
+                                        </Grid.RenderTransform>
 
-                                            <Path StrokeThickness="4"
+                                        <Path StrokeThickness="4"
                                               Opacity="0.35"
                                               StrokeStartLineCap="Round"
                                               StrokeEndLineCap="Round">
-                                                <Path.Stroke>
-                                                    <RadialGradientBrush RadiusX="1" RadiusY="1"
+                                            <Path.Stroke>
+                                                <RadialGradientBrush RadiusX="1" RadiusY="1"
                                                                      Center="0.5,0.5"
                                                                      GradientOrigin="0.5,0.5">
-                                                        <GradientStop Color="#FF00CAFF" Offset="0"/>
-                                                        <GradientStop Color="#A08230FF" Offset="0.4"/>
-                                                        <GradientStop Color="#00FFFFFF" Offset="1"/>
-                                                    </RadialGradientBrush>
-                                                </Path.Stroke>
-                                                <Path.Effect>
-                                                    <DropShadowEffect Color="#A47CFF"
+                                                    <GradientStop Color="#FF00CAFF" Offset="0"/>
+                                                    <GradientStop Color="#A08230FF" Offset="0.4"/>
+                                                    <GradientStop Color="#00FFFFFF" Offset="1"/>
+                                                </RadialGradientBrush>
+                                            </Path.Stroke>
+                                            <Path.Effect>
+                                                <DropShadowEffect Color="#A47CFF"
                                                                   BlurRadius="45"
                                                                   ShadowDepth="0"
                                                                   Opacity="0.75"/>
-                                                </Path.Effect>
-                                                <Path.Data>
-                                                    <PathGeometry>
-                                                        <PathFigure StartPoint="20,4">
-                                                            <ArcSegment Point="36,20"
+                                            </Path.Effect>
+                                            <Path.Data>
+                                                <PathGeometry>
+                                                    <PathFigure StartPoint="20,4">
+                                                        <ArcSegment Point="36,20"
                                                                     Size="16,16"
                                                                     SweepDirection="Clockwise"
                                                                     IsLargeArc="False"/>
-                                                        </PathFigure>
-                                                    </PathGeometry>
-                                                </Path.Data>
-                                            </Path>
-                                        </Grid>
+                                                    </PathFigure>
+                                                </PathGeometry>
+                                            </Path.Data>
+                                        </Path>
                                     </Grid>
                                 </Grid>
-
                             </Grid>
+                        </Grid>
                         </Border>
                     </Border>
                 </Grid>

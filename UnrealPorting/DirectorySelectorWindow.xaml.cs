@@ -7,6 +7,7 @@ namespace UnrealPorting
 {
     public partial class DirectorySelectorWindow : Window
     {
+        public event Action? OnProfileConfirmed;
         public DirectorySelectorWindow()
         {
             InitializeComponent();
@@ -85,7 +86,7 @@ namespace UnrealPorting
             {
                 Console.WriteLine("[PROFILE] No profile selected.");
             }
-
+            OnProfileConfirmed?.Invoke();
             Close();
         }
 

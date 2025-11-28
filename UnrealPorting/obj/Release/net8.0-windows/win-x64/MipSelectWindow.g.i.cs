@@ -61,7 +61,7 @@ namespace UnrealPorting {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/UnrealPorting;V1.0.3.0;component/mipselectwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/UnrealPorting;V1.0.4.0;component/mipselectwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\MipSelectWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
