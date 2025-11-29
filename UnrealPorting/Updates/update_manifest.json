@@ -1,5 +1,5 @@
 {
-  "version": "1.0.4",
-  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.4/UnrealPortingReleaseV1.0.4.zip",
-  "changelog": "Updated Tree Branch UI as well as added copying paths and blueprint reference paths (For Experienced Users)"
+  "version": "1.0.5",
+  "download_url": "https://github.com/FireTiger369/UnrealPorting/releases/download/1.0.5/UnrealPortingReleaseV1.0.5.zip",
+  "changelog": "Emergency fix for normals not loading with right colors as well as added more log info."
 }

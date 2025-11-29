@@ -209,7 +209,7 @@ namespace UnrealPorting.Helpers
 
                 // New CUE4Parse decode: returns CTexture, NOT SKBitmap
                 CTexture ctex = tex.Decode();
-                SKBitmap? sk = ConvertToSkBitmap(ctex);
+                SKBitmap? sk = ConvertToSkBitmap(ctex, tex);
 
                 if (sk == null)
                 {
@@ -349,7 +349,7 @@ namespace UnrealPorting.Helpers
 
                 // Decode the FULL texture once
                 CTexture fullTex = tex.Decode();
-                SKBitmap fullBmp = ConvertToSkBitmap(fullTex);
+                SKBitmap fullBmp = ConvertToSkBitmap(fullTex, tex);
 
                 // Target size = mip size (clamped to something sane)
                 int targetW = Math.Max(1, Math.Min(fullBmp.Width, mip.SizeX));
@@ -396,11 +396,9 @@ namespace UnrealPorting.Helpers
         // UI HELPERS
         // ------------------------------------------------------------
 
-        private static SKBitmap ConvertToSkBitmap(CTexture tex)
+        private static SKBitmap ConvertToSkBitmap(CTexture tex, UTexture2D sourceTex)
         {
-            // tex.Data contains raw RGBA8 or BGRA8 depending on CUE4Parse output
-            // Most newer UE4/UE5 exports are BGRA8
-
+            // 1) KEEP YOUR CURRENT BEHAVIOR: just wrap CTexture.Data into an SKBitmap
             var bmp = new SKBitmap(tex.Width, tex.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
 
             unsafe
@@ -408,6 +406,131 @@ namespace UnrealPorting.Helpers
                 fixed (byte* ptr = tex.Data)
                 {
                     bmp.InstallPixels(bmp.Info, (IntPtr)ptr, bmp.Info.RowBytes);
+                }
+            }
+
+            // ---------------------------------------------------------
+            // 2) NORMAL MAP DETECTION (UE flag + format)
+            // ---------------------------------------------------------
+            bool isNormal =
+                sourceTex.CompressionSettings == TextureCompressionSettings.TC_Normalmap ||
+                tex.PixelFormat == EPixelFormat.PF_BC5 ||
+                tex.PixelFormat == EPixelFormat.PF_BC7 ||
+                tex.PixelFormat == EPixelFormat.PF_DXT5;
+
+            if (!isNormal)
+                return bmp; // NOT a normal → leave exactly as before
+
+            // ---------------------------------------------------------
+            // 3) RECONSTRUCT A PROPER XYZ NORMAL FROM WHATEVER CHANNELS
+            //    CUE4Parse PUT THE DATA INTO, BUT ONLY FOR THIS TEXTURE
+            // ---------------------------------------------------------
+            unsafe
+            {
+                IntPtr lengthPtr;
+                byte* basePtr = (byte*)bmp.GetPixels(out lengthPtr);
+                if (basePtr == null)
+                    return bmp;
+
+                int width = bmp.Width;
+                int height = bmp.Height;
+                int stride = bmp.RowBytes;
+                int bpp = bmp.BytesPerPixel;   // should be 4 for RGBA8
+
+                if (bpp < 3)
+                    return bmp; // just in case
+
+                // Try several possible channel pairs for (Nx, Ny)
+                // (0=R,1=G,2=B,3=A)
+                var candidates = new (int xIndex, int yIndex)[]
+                {
+            (0, 1), // RG
+            (1, 2), // GB
+            (2, 1), // BR
+            (0, 2), // RB
+            (1, 3), // GA
+            (2, 3)  // BA
+                };
+
+                float bestScore = float.MaxValue;
+                (int xIndex, int yIndex) bestPair = (-1, -1);
+
+                int sampleStepX = Math.Max(1, width / 16);
+                int sampleStepY = Math.Max(1, height / 16);
+
+                // --- First pass: find which channel pair looks like a valid XY ---
+                foreach (var pair in candidates)
+                {
+                    float penalty = 0f;
+                    float avgNz = 0f;
+                    int count = 0;
+
+                    for (int y = 0; y < height; y += sampleStepY)
+                    {
+                        byte* row = basePtr + y * stride;
+
+                        for (int x = 0; x < width; x += sampleStepX)
+                        {
+                            byte* px = row + x * bpp;
+
+                            float nx = (px[pair.xIndex] / 255f) * 2f - 1f;
+                            float ny = (px[pair.yIndex] / 255f) * 2f - 1f;
+                            float s = nx * nx + ny * ny;
+
+                            if (s > 1f)
+                            {
+                                // penalize values that can't produce a real Z
+                                penalty += s - 1f;
+                                s = 1f;
+                            }
+
+                            float nz = (float)Math.Sqrt(1f - s);
+                            avgNz += nz;
+                            count++;
+                        }
+                    }
+
+                    if (count == 0)
+                        continue;
+
+                    avgNz /= count;
+
+                    // Prefer pairs where Nz is positive & not super tiny
+                    float score = penalty;
+                    if (avgNz < 0.2f)
+                        score += (0.2f - avgNz) * 100f;
+
+                    if (score < bestScore)
+                    {
+                        bestScore = score;
+                        bestPair = pair;
+                    }
+                }
+
+                if (bestPair.xIndex < 0)
+                    return bmp; // nothing usable, just keep the original
+
+                // --- Second pass: actually rebuild normals into RGB for ALL pixels ---
+                for (int y = 0; y < height; y++)
+                {
+                    byte* row = basePtr + y * stride;
+
+                    for (int x = 0; x < width; x++)
+                    {
+                        byte* px = row + x * bpp;
+
+                        float nx = (px[bestPair.xIndex] / 255f) * 2f - 1f;
+                        float ny = (px[bestPair.yIndex] / 255f) * 2f - 1f;
+                        float s = nx * nx + ny * ny;
+                        if (s > 1f) s = 1f;
+                        float nz = (float)Math.Sqrt(1f - s);
+
+                        // write back as standard tangent-space normal (RGB)
+                        px[0] = (byte)((nx * 0.5f + 0.5f) * 255f); // R = X
+                        px[1] = (byte)((ny * 0.5f + 0.5f) * 255f); // G = Y
+                        px[2] = (byte)((nz * 0.5f + 0.5f) * 255f); // B = Z
+                                                                   // px[3] (alpha) left as-is
+                    }
                 }
             }
 
@@ -542,7 +665,7 @@ namespace UnrealPorting.Helpers
             try
             {
                 CTexture ctex = tex.Decode();
-                SKBitmap? bmp = ConvertToSkBitmap(ctex);
+                SKBitmap? bmp = ConvertToSkBitmap(ctex, tex);
 
                 if (bmp == null)
                 {
@@ -658,7 +781,7 @@ namespace UnrealPorting.Helpers
             try
             {
                 CTexture ctex = tex.Decode();
-                SKBitmap? bmp = ConvertToSkBitmap(ctex);
+                SKBitmap? bmp = ConvertToSkBitmap(ctex, tex);
                 if (bmp == null)
                 {
                     Console.WriteLine("[EXPORT] Texture decode failed: " + tex.Name);

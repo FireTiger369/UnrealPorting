@@ -93,7 +93,7 @@ namespace UnrealPorting {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/UnrealPorting;V1.0.4.0;component/toastwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/UnrealPorting;V1.0.5.0;component/toastwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\ToastWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

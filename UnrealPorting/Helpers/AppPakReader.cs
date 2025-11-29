@@ -19,6 +19,8 @@ namespace UnrealPorting.Helpers
         private readonly HashSet<string> _uniquePaths = new(StringComparer.OrdinalIgnoreCase);
         private readonly string _mappingFile;
         public string MappingPath => _mappingFile;
+        private LogsWindow _logsWindow;
+        private readonly List<string> _logHistory = new();
 
         // ===============================================
         // PATH B1 HOTFIX:
@@ -87,7 +89,7 @@ namespace UnrealPorting.Helpers
                 isCaseInsensitive: true,
                 new VersionContainer(version)
             );
-            Console.WriteLine($"[VERSION] Using engine version: {version}");
+            AddLog($"Using engine version: {version}");
 
             int totalKeys = (guidKeys?.Count ?? 0) + (filenameKeys?.Count ?? 0);
             Console.WriteLine($"[LOAD] Mounting archives in {pakDirectory} (keys: {totalKeys})");
@@ -124,6 +126,7 @@ namespace UnrealPorting.Helpers
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[ERROR] Failed to register {name}: {ex.Message}");
+                    AddLog($"Failed to register {name}: {ex.Message}");
                 }
             }
 
@@ -193,6 +196,7 @@ namespace UnrealPorting.Helpers
             else
             {
                 Console.WriteLine("[PROFILE] No active profile → cannot load profile AES keys.");
+                AddLog("[PROFILE] No active profile → cannot load profile AES keys.");
             }
 
             // Expand UTOC ↔ UCAS, and ALSO (hotfix) UTOC → PAK if pak exists.
@@ -273,11 +277,13 @@ namespace UnrealPorting.Helpers
                     if (!matchedKey)
                     {
                         Console.WriteLine($"[WARN] No AES found for {filename}");
+                        AddLog  ($"No AES key found for {filename}");
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[WARN] Failed to submit AES for {vfs.Name}: {ex.Message}");
+                    AddLog  ($"Failed to submit AES for {vfs.Name}: {ex.Message}");
                 }
             }
 
@@ -306,6 +312,7 @@ namespace UnrealPorting.Helpers
             catch (Exception ex)
             {
                 Console.WriteLine($"[AES] ERROR applying global key fallback: {ex.Message}");
+                AddLog  ($"[AES] ERROR applying global key fallback: {ex.Message}");
             }
 
             // 4) Controlled mounting w/ B1 utoc-skip hotfix
@@ -351,6 +358,7 @@ namespace UnrealPorting.Helpers
                 catch (Exception ex)
                 {
                     Console.WriteLine($"FAIL: {ex.Message}");
+                    AddLog($"Failed to mount {name}: {ex.Message}");
                 }
             }
 
@@ -377,6 +385,7 @@ namespace UnrealPorting.Helpers
             catch (Exception ex)
             {
                 Console.WriteLine($"[ERROR] Provider initialize failed: {ex.Message}");
+                AddLog  ($"Provider initialize failed: {ex.Message}");
             }
 
             // 7) Second-pass stabilization
@@ -404,11 +413,13 @@ namespace UnrealPorting.Helpers
                 catch (Exception ex)
                 {
                     Console.WriteLine($"[ERROR] Mapping load failed: {ex.Message}");
+                    AddLog  ($"Mapping load failed: {ex.Message}");
                 }
             }
             else
             {
                 Console.WriteLine("[MAPPINGS] No profile mapping found, skipping.");
+                AddLog  ("No profile mapping found, skipping.");
             }
 
             PrintProviderSummary();
@@ -450,6 +461,18 @@ namespace UnrealPorting.Helpers
         {
             var data = ReadFileBytes(path);
             return data == null ? null : System.Text.Encoding.UTF8.GetString(data);
+        }
+        public void AddLog(string text)
+        {
+            Console.WriteLine(text);
+
+            string line = $"[{DateTime.Now:HH:mm:ss}] {text}";
+
+            // Store permanently in buffer
+            _logHistory.Add(line);
+
+            // If logs window is open, update it live
+            _logsWindow?.AddLog(line);
         }
 
         public void Dispose() => _provider.Dispose();

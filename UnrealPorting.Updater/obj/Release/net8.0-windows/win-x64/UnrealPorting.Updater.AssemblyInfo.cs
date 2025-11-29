@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UnrealPorting.Updater")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c9770458e82eb4d1c89d588805a2c8997ca17fa4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d00dbd16ba40664c0f4091a5e8e2916c35b5cdef")]
 [assembly: System.Reflection.AssemblyProductAttribute("UnrealPorting.Updater")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UnrealPorting.Updater")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
